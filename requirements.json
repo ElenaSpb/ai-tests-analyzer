@@ -1,0 +1,37 @@
+[
+  {
+    "id": "REQ-AUTH-01",
+    "title": "User Registration with Email",
+    "description": "Пользователь может зарегистрироваться в системе, указав email, пароль и подтвердив согласие с пользовательским соглашением. После регистрации система отправляет email подтверждения.",
+    "category": "authentication",
+    "priority": "high"
+  },
+  {
+    "id": "REQ-AUTH-02",
+    "title": "User Login and Session Management",
+    "description": "Пользователь может войти в систему, используя email и пароль. Система создает сессию с JWT-токеном и сохраняет её. Пользователь может выйти из системы, что завершает сессию.",
+    "category": "authentication",
+    "priority": "high"
+  },
+  {
+    "id": "REQ-EXERCISE-01",
+    "title": "Audio Exercise Playback and Progress Tracking",
+    "description": "Пользователь может прослушивать аудио-упражнения из доступных серий. Система отслеживает прогресс выполнения упражнений, сохраняет результаты и позволяет продолжить с места остановки.",
+    "category": "exercises",
+    "priority": "high"
+  },
+  {
+    "id": "REQ-PROGRESS-01",
+    "title": "User Progress Statistics and Dashboard",
+    "description": "Система отображает статистику тренировок пользователя (количество выполненных упражнений, прогресс по сериям, время тренировок) в личном кабинете. Доступны графики и отчеты по периодам.",
+    "category": "analytics",
+    "priority": "medium"
+  },
+  {
+    "id": "REQ-ADMIN-01",
+    "title": "Content Management by Specialists",
+    "description": "Специалист/администратор может управлять упражнениями через админ-панель: создавать/редактировать/удалять упражнения, загружать аудио-файлы, настраивать серии упражнений.",
+    "category": "administration",
+    "priority": "medium"
+  }
+]

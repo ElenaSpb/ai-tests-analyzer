@@ -1,5 +1,10 @@
-package com.semantic.coverage
+package analyze
 
+import com.semantic.coverage.dto.ConfidenceLevel
+import com.semantic.coverage.embedding.LocalEmbeddingService
+import com.semantic.coverage.dto.MatchResult
+import com.semantic.coverage.dto.TestChunk
+import com.semantic.coverage.dto.Requirement
 import java.util.*
 
 class CoverageAnalyzer(

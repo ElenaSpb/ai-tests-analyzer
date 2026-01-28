@@ -1,7 +1,8 @@
-package com.semantic.coverage
+package com.semantic.coverage.parser
 
 // TestParser.kt (альтернативная версия без ExperimentalPathApi)
 
+import com.semantic.coverage.dto.TestChunk
 import java.io.File
 import kotlin.math.absoluteValue
 

@@ -1,6 +1,5 @@
-package com.semantic.coverage
+package com.semantic.coverage.embedding
 
-// embeddings.kt
 import java.util.*
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt

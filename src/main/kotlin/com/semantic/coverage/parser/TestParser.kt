@@ -1,17 +1,18 @@
-package com.semantic.coverage
+package com.semantic.coverage.parser
 
+// parser.kt
+import com.semantic.coverage.dto.TestChunk
 import java.io.File
 import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.Path
 import kotlin.io.path.walk
-import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalPathApi::class)
-class TestParserNew {
+class TestParser {
     private val testPatterns = listOf(
+        "*test*.kt",
         "*Test.kt",
         "*Spec.kt",
-        "*test*.kt",
         "*test*.java",
         "*Test.java",
         "*.test.js",
@@ -24,66 +25,21 @@ class TestParserNew {
         val testChunks = mutableListOf<TestChunk>()
         val projectPath = Path(projectRoot)
 
-        // Собираем ВСЕ файлы, затем фильтруем
-        val allFiles = mutableListOf<File>()
-
-        projectPath.walk()
-            .filter { it.toFile().isFile }
-            .take(maxFiles * 10) // Берем больше файлов для фильтрации
-            .forEach { allFiles.add(it.toFile()) }
-
-        // Фильтруем по шаблонам
-        val testFiles = allFiles.filter { file ->
-            testPatterns.any { pattern ->
-                matchesPattern(file.name, pattern)
-            }
-        }.take(maxFiles)
-
-        println("Found ${testFiles.size} test files (from ${allFiles.size} total)")
-
-        testFiles.forEach { file ->
-            try {
-                val chunks = extractChunksFromFile(file)
-                testChunks.addAll(chunks)
-                println("  ✓ ${file.name} → ${chunks.size} chunks")
-            } catch (e: Exception) {
-                println("  ✗ ${file.name}: ${e.message}")
-            }
-        }
-
-        return testChunks.take(maxFiles * 5)
-    }
-
-    private fun matchesPattern(fileName: String, pattern: String): Boolean {
-        return try {
-            // Преобразуем glob в regex
-            val regexPattern = pattern
-                .replace(".", "\\.")
-                .replace("*", ".*")
-                .replace("?", ".")
-            fileName.matches(regexPattern.toRegex(RegexOption.IGNORE_CASE))
-        } catch (e: Exception) {
-            // Fallback: простое сравнение
-            pattern.contains("*").let {
-                if (it) {
-                    val cleanPattern = pattern.replace("*", "")
-                    fileName.contains(cleanPattern, ignoreCase = true)
-                } else {
-                    fileName.equals(pattern, ignoreCase = true)
+        testPatterns.forEach { pattern ->
+            projectPath.walk()
+                .filter { it.fileName.toString().matches(pattern.toRegex()) }
+                .take(maxFiles)
+                .forEach { file ->
+                    val chunks = extractChunksFromFile(file.toFile())
+                    testChunks.addAll(chunks)
                 }
-            }
         }
+
+        return testChunks.take(maxFiles * 5) // ~5 чанков на файл
     }
 
     private fun extractChunksFromFile(file: File): List<TestChunk> {
-        val content = try {
-            file.readText(Charsets.UTF_8)
-        } catch (e: Exception) {
-            ""
-        }
-
-        if (content.isEmpty()) return emptyList()
-
+        val content = file.readText(Charsets.UTF_8)
         val chunks = mutableListOf<TestChunk>()
 
         when (file.extension.lowercase()) {
@@ -93,7 +49,7 @@ class TestParserNew {
             else -> {
                 // Общий парсер для других языков
                 val chunk = TestChunk(
-                    id = "${file.nameWithoutExtension}_general_${System.currentTimeMillis()}",
+                    id = "${file.nameWithoutExtension}_general",
                     filePath = file.path,
                     testName = file.nameWithoutExtension,
                     content = content.take(1000),
@@ -115,20 +71,22 @@ class TestParserNew {
         var testName = ""
         var lineNumber = 0
 
-        for ((index, line) in lines.withIndex()) {
-            lineNumber = index + 1
+        for (line in lines) {
+            lineNumber++
             val trimmedLine = line.trim()
 
             // Поиск объявления класса
             if (trimmedLine.startsWith("class ") || trimmedLine.startsWith("@Test class ")) {
-                currentClass = extractClassName(trimmedLine)
+                currentClass = trimmedLine.substringAfter("class ").substringBefore(" ").substringBefore(":")
                 inTest = false
             }
 
             // Поиск тестовых методов
-            val isTestMethod = isTestMethodLine(trimmedLine)
+            if (trimmedLine.contains("@Test") ||
+                trimmedLine.startsWith("fun test") ||
+                trimmedLine.startsWith("def test") ||
+                trimmedLine.startsWith("void test")) {
 
-            if (isTestMethod) {
                 // Сохраняем предыдущий тест
                 if (inTest && testName.isNotEmpty()) {
                     chunks.add(createTestChunk(file, currentClass, testName, testContent.toString(), lineNumber))
@@ -151,26 +109,9 @@ class TestParserNew {
         return chunks
     }
 
-    private fun extractClassName(line: String): String {
-        return line.substringAfter("class ")
-            .substringBefore("(")
-            .substringBefore("{")
-            .substringBefore(":")
-            .substringBefore("<")
-            .substringBefore(" ")
-            .trim()
-    }
-
-    private fun isTestMethodLine(line: String): Boolean {
-        return line.contains("@Test") ||
-                line.matches(".*fun\\s+test.*".toRegex(RegexOption.IGNORE_CASE)) ||
-                line.matches(".*void\\s+test.*".toRegex(RegexOption.IGNORE_CASE)) ||
-                line.matches(".*def\\s+test.*".toRegex(RegexOption.IGNORE_CASE))
-    }
-
     private fun parseJavascriptTests(file: File, content: String): List<TestChunk> {
         val chunks = mutableListOf<TestChunk>()
-        val regex = """(describe|it|test)\s*\(['"`](.*?)['"`]""".toRegex(RegexOption.IGNORE_CASE)
+        val regex = """(describe|it|test)\s*\(['"](.*?)['"]""".toRegex()
         val matches = regex.findAll(content)
 
         matches.forEach { match ->
@@ -182,13 +123,13 @@ class TestParserNew {
             if (endIndex > startIndex) {
                 val testBody = content.substring(startIndex, endIndex + 1)
                 val chunk = TestChunk(
-                    id = "${file.nameWithoutExtension}_${testName.hashCode().absoluteValue}",
+                    id = "${file.nameWithoutExtension}_${testName.hashCode()}",
                     filePath = file.path,
                     testName = "$testType: $testName",
                     content = testBody,
                     metadata = mapOf(
                         "type" to testType,
-                        "language" to file.extension
+                        "language" to "javascript"
                     )
                 )
                 chunks.add(chunk)
@@ -243,17 +184,11 @@ class TestParserNew {
     }
 
     private fun createTestChunk(file: File, className: String, testName: String, content: String, lineNumber: Int): TestChunk {
-        val fullTestName = if (className.isNotEmpty()) {
-            "$className.$testName"
-        } else {
-            testName
-        }
-
         return TestChunk(
-            id = "${file.name}_${fullTestName}_${System.currentTimeMillis()}".hashCode().absoluteValue.toString(),
+            id = "${file.name}_${className}_${testName}".hashCode().toString(),
             filePath = file.path,
-            testName = fullTestName,
-            content = content.take(2000),
+            testName = if (className.isNotEmpty()) "$className.$testName" else testName,
+            content = content.take(2000), // Ограничиваем размер
             metadata = mapOf(
                 "className" to className,
                 "line" to lineNumber.toString(),
@@ -267,67 +202,18 @@ class TestParserNew {
             line.contains("fun ") -> line.substringAfter("fun ").substringBefore("(").trim()
             line.contains("void ") -> line.substringAfter("void ").substringBefore("(").trim()
             line.contains("def ") -> line.substringAfter("def ").substringBefore("(").trim()
-            line.contains("@Test") -> {
-                // Ищем имя метода после @Test
-                val nextPart = line.substringAfter("@Test")
-                when {
-                    nextPart.contains("fun ") -> nextPart.substringAfter("fun ").substringBefore("(").trim()
-                    nextPart.contains("void ") -> nextPart.substringAfter("void ").substringBefore("(").trim()
-                    else -> "test_method_${line.hashCode().absoluteValue}"
-                }
-            }
-            else -> "unnamed_test_${line.hashCode().absoluteValue}"
+            else -> line.substringAfter("@Test").trim()
         }
     }
 
     private fun findClosingBracket(content: String, startIndex: Int): Int {
-        var bracketCount = 0
-        var braceCount = 0
-        var inString = false
-        var stringChar: Char? = null
-        var escaped = false
-
+        var count = 0
         for (i in startIndex until content.length) {
-            val char = content[i]
-
-            // Обработка экранирования
-            if (escaped) {
-                escaped = false
-                continue
-            }
-
-            if (char == '\\') {
-                escaped = true
-                continue
-            }
-
-            // Обработка строковых литералов
-            if (char == '"' || char == '\'' || char == '`') {
-                if (!inString) {
-                    inString = true
-                    stringChar = char
-                } else if (stringChar == char && !escaped) {
-                    inString = false
-                    stringChar = null
-                }
-            }
-
-            if (!inString) {
-                when (char) {
-                    '(' -> bracketCount++
-                    ')' -> {
-                        bracketCount--
-                        if (bracketCount == 0 && braceCount == 0) {
-                            return i
-                        }
-                    }
-                    '{' -> braceCount++
-                    '}' -> {
-                        braceCount--
-                        if (bracketCount == 0 && braceCount == 0) {
-                            return i
-                        }
-                    }
+            when (content[i]) {
+                '(' -> count++
+                ')' -> {
+                    count--
+                    if (count == 0) return i
                 }
             }
         }

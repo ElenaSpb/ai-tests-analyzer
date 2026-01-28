@@ -1,5 +1,13 @@
 package com.semantic.coverage
 
+import analyze.CoverageOpenAiAnalyzer
+import com.semantic.coverage.`ai-services`.AiService
+import com.semantic.coverage.`ai-services`.OllamaService
+import com.semantic.coverage.`ai-services`.OpenAiSslService
+import com.semantic.coverage.dto.Requirement
+import com.semantic.coverage.embedding.LocalEmbeddingService
+import com.semantic.coverage.parser.TestParserNew
+import com.semantic.coverage.report.ReportWithAiGenerator
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
@@ -17,7 +25,7 @@ fun main(args: Array<String>) {
         ArgType.String,
         shortName = "r",
         description = "Path to requirements file (JSON)"
-    )
+    ).default("requirements.json")
 
     val outputPath by parser.option(
         ArgType.String,
@@ -29,7 +37,7 @@ fun main(args: Array<String>) {
         ArgType.Int,
         shortName = "m",
         description = "Maximum number of test files to process"
-    ).default(50)
+    ).default(5)
 
     val useAI by parser.option(
         ArgType.Boolean,
@@ -47,7 +55,7 @@ fun main(args: Array<String>) {
         ArgType.String,
         shortName = "ollama",
         description = "Ollama URL (e.g., http://localhost:11434)"
-    ).default("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")
+    ).default("")
 
     parser.parse(args)
 
@@ -56,10 +64,11 @@ fun main(args: Array<String>) {
     println("Max files: $maxFiles")
 
     // Инициализация AI сервиса
-    val aiService = when {
+    val aiService: AiService? = when {
         useAI && openaiKey.isNotBlank() -> {
             println("🤖 Using OpenAI for analysis")
-            OpenAIService(openaiKey)
+//            OpenAiService(openaiKey)
+            OpenAiSslService(openaiKey, unsafeSSL = true)
         }
         useAI && ollamaUrl.isNotBlank() -> {
             println("🤖 Using Ollama for analysis")
@@ -74,26 +83,27 @@ fun main(args: Array<String>) {
 
     // Создание анализатора с AI
     val embeddingService = LocalEmbeddingService()
-//    val analyzer = CoverageOpenAiAnalyzer(
-//        embeddingService = embeddingService,
-//        openAIService = aiService,
-//        useAI = useAI && aiService != null
-//    )
+    val analyzer = CoverageOpenAiAnalyzer(
+        embeddingService = embeddingService,
+        aiService = aiService,
+        useAI = useAI && aiService != null
+    )
 
     try {
         // 1. Инициализация компонентов
 //        val testParser = TestParser()
         val testParser = TestParserNew()
         val embeddingService = LocalEmbeddingService()
-        val analyzer = CoverageAnalyzer(embeddingService)
-        val reporter = ReportGenerator()
+        // val analyzer = CoverageAnalyzer(embeddingService)
+//        val reporter = ReportGenerator()
+        val reporter = ReportWithAiGenerator()
 
         // 2. Загрузка требований
         val requirements = if (requirementsPath != null && File(requirementsPath).exists()) {
             loadRequirementsFromFile(requirementsPath!!)
         } else {
             // Пример требований для brainup.site
-            createSampleRequirements()
+            createDefaultRequirements()
         }
 
         println("📋 Loaded ${requirements.size} requirements")
@@ -123,25 +133,119 @@ fun main(args: Array<String>) {
 
 fun loadRequirementsFromFile(filePath: String): List<Requirement> {
     val file = File(filePath)
-    val content = file.readText()
 
-    // Простой парсер JSON для требований
-    return try {
-        val regex = """\{"id":\s*"([^"]+)",\s*"title":\s*"([^"]+)",\s*"description":\s*"([^"]+)""".toRegex()
-        regex.findAll(content).map { match ->
-            Requirement(
-                id = match.groupValues[1],
-                title = match.groupValues[2],
-                description = match.groupValues[3]
-            )
-        }.toList()
+    if (!file.exists()) {
+        println("❌ Requirements file not found: $filePath")
+        return createDefaultRequirements()
+    }
+
+    println("📋 Loading requirements from: ${file.absolutePath}")
+    println("   File size: ${file.length()} bytes")
+
+    try {
+        val content = file.readText()
+        println("   File content (first 200 chars): ${content.take(200)}...")
+
+        // Используем Jackson для парсинга JSON
+        val mapper = com.fasterxml.jackson.databind.ObjectMapper()
+
+        // Читаем как массив объектов
+        val requirements = mapper.readValue(content, Array<Requirement>::class.java).toList()
+
+        println("✅ Successfully loaded ${requirements.size} requirements")
+        requirements.forEachIndexed { i, req ->
+            println("   ${i + 1}. ${req.id}: ${req.title}")
+        }
+
+        return requirements
+
+    } catch (e: com.fasterxml.jackson.core.JsonParseException) {
+        println("❌ JSON parsing error: ${e.message}")
+        println("   Trying fallback parser...")
+        return parseWithSimpleParser(file)
+
     } catch (e: Exception) {
-        println("Warning: Could not parse requirements file, using sample requirements")
-        createSampleRequirements()
+        println("❌ Error reading requirements file: ${e.message}")
+        e.printStackTrace()
+        return createDefaultRequirements()
     }
 }
 
-fun createSampleRequirements(): List<Requirement> {
+// Fallback парсер на случай проблем с Jackson
+private fun parseWithSimpleParser(file: File): List<Requirement> {
+    val content = file.readText()
+    val requirements = mutableListOf<Requirement>()
+
+    // Улучшенный regex
+    val pattern = """
+        \{\s*
+        "id"\s*:\s*"([^"]+)"\s*,\s*
+        "title"\s*:\s*"([^"]+)"\s*,\s*
+        "description"\s*:\s*"([^"]+)"[^}]*\}
+    """.trimIndent().toRegex(RegexOption.DOT_MATCHES_ALL)
+
+    val matches = pattern.findAll(content)
+
+    matches.forEach { match ->
+        if (match.groupValues.size >= 4) {
+            requirements.add(
+                Requirement(
+                    id = match.groupValues[1],
+                    title = match.groupValues[2],
+                    description = match.groupValues[3]
+                )
+            )
+        }
+    }
+
+    if (requirements.isNotEmpty()) {
+        println("✅ Simple parser loaded ${requirements.size} requirements")
+        return requirements
+    }
+
+    // Еще более простой парсер
+    val simplePattern = """"id":\s*"([^"]+)".*?"title":\s*"([^"]+)".*?"description":\s*"([^"]+)"""".toRegex(
+        RegexOption.DOT_MATCHES_ALL
+    )
+
+    val simpleMatches = simplePattern.findAll(content)
+    simpleMatches.forEach { match ->
+        if (match.groupValues.size >= 4) {
+            requirements.add(
+                Requirement(
+                    id = match.groupValues[1],
+                    title = match.groupValues[2],
+                    description = match.groupValues[3]
+                )
+            )
+        }
+    }
+
+    println("⚠️  Simple parser loaded ${requirements.size} requirements")
+    return if (requirements.isEmpty()) createDefaultRequirements() else requirements
+}
+//
+//fun loadRequirementsFromFile(filePath: String): List<Requirement> {
+//    val file = File(filePath)
+//    val content = file.readText()
+//
+//    // Простой парсер JSON для требований
+//    return try {
+//        val regex = """\{"id":\s*"([^"]+)",\s*"title":\s*"([^"]+)",\s*"description":\s*"([^"]+)""".toRegex()
+//        regex.findAll(content).map { match ->
+//            Requirement(
+//                id = match.groupValues[1],
+//                title = match.groupValues[2],
+//                description = match.groupValues[3]
+//            )
+//        }.toList()
+//    } catch (e: Exception) {
+//        println("Warning: Could not parse requirements file, using sample requirements")
+//        createSampleRequirements()
+//    }
+//}
+
+fun createDefaultRequirements(): List<Requirement> {
     return listOf(
         Requirement(
             id = "REQ-AUTH-01",
