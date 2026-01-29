@@ -4,10 +4,11 @@ import com.semantic.coverage.analyze.CoverageOpenAiAnalyzer
 import com.semantic.coverage.aiServices.AiService
 import com.semantic.coverage.aiServices.OllamaService
 import com.semantic.coverage.aiServices.OpenAiV2Service
-import com.semantic.coverage.embedding.SentenceTransformerPythonService
+import com.semantic.coverage.embedding.LocalEmbeddingService
+import com.semantic.coverage.embedding.OpenAIEmbeddingService
 import com.semantic.coverage.parser.RequirementsLoader
 import com.semantic.coverage.parser.TestsParser
-import com.semantic.coverage.report.ReportWithAiGenerator
+import com.semantic.coverage.report.ReportWithAiAnalyzeGenerator
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
@@ -49,7 +50,7 @@ fun main(args: Array<String>) {
         ArgType.String,
         shortName = "openai-key",
         description = "OpenAI API key"
-    ).default("")
+    ).default("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")
 
     val ollamaUrl by parser.option(
         ArgType.String,
@@ -71,7 +72,7 @@ fun main(args: Array<String>) {
         // 1. Инициализация компонентов
         val requirementsLoader = RequirementsLoader()
         val testParser = TestsParser()
-        val reporter = ReportWithAiGenerator()
+        val reporter = ReportWithAiAnalyzeGenerator()
 
         // 2. Загрузка требований
         val requirements = requirementsLoader.loadFromFile(requirementsPath)
@@ -81,9 +82,10 @@ fun main(args: Array<String>) {
         }
 
         // 3. Инициализация анализатора
-        val embeddingService = SentenceTransformerPythonService()
+        val localEmbeddingService = LocalEmbeddingService()
+        val openAiEmbeddingService = OpenAIEmbeddingService(openaiKey)
         val analyzer = CoverageOpenAiAnalyzer(
-            embeddingService = embeddingService,
+            embeddingService = openAiEmbeddingService,
             aiService = aiService,
             useAI = useAI && aiService != null
         )

@@ -4,7 +4,7 @@ import com.semantic.coverage.dto.ConfidenceLevel
 import com.semantic.coverage.embedding.LocalEmbeddingService
 import com.semantic.coverage.dto.MatchResult
 import com.semantic.coverage.dto.TestChunk
-import com.semantic.coverage.dto.Requirement
+import com.semantic.coverage.dto.BusinessRequirement
 import java.util.*
 
 class CoverageAnalyzer(
@@ -13,7 +13,7 @@ class CoverageAnalyzer(
 ) {
 
     fun analyzeCoverage(
-        requirements: List<Requirement>,
+        requirements: List<BusinessRequirement>,
         testChunks: List<TestChunk>
     ): List<CoverageReport> {
         // Векторизуем требования
@@ -49,7 +49,7 @@ class CoverageAnalyzer(
     }
 
     private fun findMatchesForRequirement(
-        requirement: Requirement,
+        requirement: BusinessRequirement,
         testChunks: List<TestChunk>,
         topK: Int = 10
     ): List<MatchResult> {
@@ -113,7 +113,7 @@ class CoverageAnalyzer(
         }
     }
 
-    private fun identifyGaps(requirement: Requirement, matches: List<MatchResult>): List<String> {
+    private fun identifyGaps(requirement: BusinessRequirement, matches: List<MatchResult>): List<String> {
         val gaps = mutableListOf<String>()
 
         // Анализ на основе ключевых слов в требовании
@@ -153,7 +153,7 @@ class CoverageAnalyzer(
             .toSet()
     }
 
-    private fun generateEvidence(requirement: Requirement, testChunk: TestChunk, similarity: Float): String {
+    private fun generateEvidence(requirement: BusinessRequirement, testChunk: TestChunk, similarity: Float): String {
         return buildString {
             append("Тест '${testChunk.testName}' (файл: ${testChunk.filePath})\n")
             append("Сходство: ${"%.2f".format(similarity)}\n")

@@ -1,10 +1,7 @@
 package com.semantic.coverage.analyze
 
 import com.semantic.coverage.aiServices.AiService
-import com.semantic.coverage.dto.ConfidenceLevel
-import com.semantic.coverage.dto.MatchResult
-import com.semantic.coverage.dto.Requirement
-import com.semantic.coverage.dto.TestChunk
+import com.semantic.coverage.dto.*
 import com.semantic.coverage.embedding.EmbeddingService
 import java.util.*
 
@@ -15,7 +12,7 @@ class CoverageOpenAiAnalyzer(
     private val similarityThreshold: Float = 0.3f
 ) {
     fun analyzeCoverage(
-        requirements: List<Requirement>,
+        requirements: List<BusinessRequirement>,
         testChunks: List<TestChunk>
     ): List<CoverageReport> {
         println("Начинаем анализ семантического покрытия...")
@@ -23,11 +20,11 @@ class CoverageOpenAiAnalyzer(
         println("   Тестовых чанков: ${testChunks.size}")
         println("   Использовать AI: $useAI")
 
-        // 1. Векторизуем требования
+        // 1. Векторизуем требования с учетом всех полей (включая критерии и теги)
         println("📊 Векторизация требований...")
         val requirementsWithEmbeddings = requirements.mapIndexed { index, req ->
             print("\r   Обработано ${index + 1}/${requirements.size} требований")
-            req.copy(embedding = embeddingService.getEmbedding("${req.title}\n${req.description}"))
+            req.copy(embedding = embeddingService.getEmbedding(req.getFullTextForEmbedding()))
         }
         println()
 
@@ -36,7 +33,15 @@ class CoverageOpenAiAnalyzer(
         val testChunksWithEmbeddings = testChunks.mapIndexed { index, chunk ->
             print("\r   Обработано ${index + 1}/${testChunks.size} тестов")
             if (chunk.embedding == null) {
-                val enrichedContent = "${chunk.testName}\n${chunk.content}\n${chunk.metadata.values.joinToString(" ")}"
+                val enrichedContent = buildString {
+                    append(chunk.testName)
+                    append("\n")
+                    append(chunk.content)
+                    if (chunk.metadata.isNotEmpty()) {
+                        append("\nМетаданные: ")
+                        append(chunk.metadata.values.joinToString(" "))
+                    }
+                }
                 chunk.copy(embedding = embeddingService.getEmbedding(enrichedContent))
             } else {
                 chunk
@@ -50,20 +55,19 @@ class CoverageOpenAiAnalyzer(
             println("Требование ${index + 1}/${requirements.size}: ${requirement.title}")
 
             val matches = findMatchesForRequirement(requirement, testChunksWithEmbeddings)
-            val coverageScore = calculateCoverageScore(matches)
+            val coverageScore = calculateCoverageScore(requirement, matches)
             val gaps = identifyGaps(requirement, matches)
 
-            // AI анализ (если включен и есть соответствия)
-            val aiAnalysis = if (useAI && aiService != null && matches.isNotEmpty()) {
-                println("Запуск AI анализа...")
+            // AI анализ (если включен)
+            val aiAnalysis = if (useAI && aiService != null) {
+                println("🤖 Запуск расширенного AI анализа...")
                 try {
                     analyzeWithAI(requirement, matches, aiService)
                 } catch (e: Exception) {
-                    println("Ошибка AI анализа: ${e.message}")
+                    println("⚠️  Ошибка AI анализа: ${e.message}")
                     null
                 }
-            } else
-                null
+            } else null
 
             val confidence = calculateConfidenceLevel(matches, aiAnalysis)
 
@@ -79,7 +83,7 @@ class CoverageOpenAiAnalyzer(
     }
 
     private fun findMatchesForRequirement(
-        requirement: Requirement,
+        requirement: BusinessRequirement,
         testChunks: List<TestChunk>,
         topK: Int = 10
     ): List<MatchResult> {
@@ -121,26 +125,41 @@ class CoverageOpenAiAnalyzer(
             .take(topK)
     }
 
-    private fun calculateCoverageScore(matches: List<MatchResult>): Float {
+    private fun calculateCoverageScore(requirement: BusinessRequirement, matches: List<MatchResult>): Float {
         if (matches.isEmpty()) return 0.0f
 
+        // Базовый расчет на основе сходства
         val highConfidenceMatches = matches.filter { it.confidence == ConfidenceLevel.HIGH }
         val mediumConfidenceMatches = matches.filter { it.confidence == ConfidenceLevel.MEDIUM }
 
-        // Взвешенная формула
         val weightedMatches = (highConfidenceMatches.size * 1.0f) +
                 (mediumConfidenceMatches.size * 0.6f) +
                 (matches.size * 0.3f)
 
-        val maxPossible = matches.size * 1.9f // Максимальный возможный вес
-
+        val maxPossible = matches.size * 1.9f
         val weightedScore = if (maxPossible > 0) weightedMatches / maxPossible else 0.0f
-
-        // Учитываем максимальное сходство
         val maxSimilarity = matches.maxOfOrNull { it.similarityScore } ?: 0.0f
+        val baseScore = ((weightedScore * 0.6f) + (maxSimilarity * 0.4f)) * 100f
 
-        // Комбинированная оценка
-        return ((weightedScore * 0.6f) + (maxSimilarity * 0.4f)) * 100f
+        // Улучшение оценки при наличии критериев приемки и их покрытия
+        if (requirement.acceptanceCriteria.isNotEmpty()) {
+            val coveredCriteria = requirement.acceptanceCriteria.count { criterion ->
+                matches.any { match ->
+                    val testText = "${match.testChunk.testName} ${match.testChunk.content}"
+                    testText.contains(criterion, ignoreCase = true) ||
+                            (match.testChunk.embedding?.let { embedding ->
+                                embeddingService.cosineSimilarity(
+                                    embeddingService.getEmbedding(criterion),
+                                    embedding
+                                ) > 0.6f
+                            } ?: false)
+                }
+            }
+            val criteriaCoverage = (coveredCriteria.toFloat() / requirement.acceptanceCriteria.size) * 20f // до +20%
+            return (baseScore + criteriaCoverage).coerceAtMost(100f)
+        }
+
+        return baseScore
     }
 
     private fun calculateConfidenceLevel(
@@ -173,9 +192,8 @@ class CoverageOpenAiAnalyzer(
     }
 
     private fun identifyGaps(
-        requirement: Requirement,
-        matches: List<MatchResult>,
-        aiAnalysis: AIAnalysis? = null
+        requirement: BusinessRequirement,
+        matches: List<MatchResult>
     ): List<String> {
         val gaps = mutableListOf<String>()
 
@@ -185,23 +203,41 @@ class CoverageOpenAiAnalyzer(
             return gaps
         }
 
-        // 2. Анализ ключевых слов
-        val keywords = extractKeywords(requirement.description)
-        val matchedKeywords = mutableSetOf<String>()
-
-        matches.forEach { match ->
-            keywords.forEach { keyword ->
-                val testText = "${match.testChunk.testName} ${match.testChunk.content}"
-                if (testText.contains(keyword, ignoreCase = true)) {
-                    matchedKeywords.add(keyword)
+        // 2. Анализ покрытия критериев приемки
+        if (requirement.acceptanceCriteria.isNotEmpty()) {
+            val uncoveredCriteria = requirement.acceptanceCriteria.filter { criterion ->
+                matches.none { match ->
+                    val testText = "${match.testChunk.testName} ${match.testChunk.content}"
+                    testText.contains(criterion, ignoreCase = true) ||
+                            (match.testChunk.embedding?.let { embedding ->
+                                embeddingService.cosineSimilarity(
+                                    embeddingService.getEmbedding(criterion),
+                                    embedding
+                                ) > 0.55f
+                            } ?: false)
                 }
+            }
+
+            if (uncoveredCriteria.isNotEmpty()) {
+                val displayCriteria = uncoveredCriteria.take(3).joinToString(", ")
+                gaps.add("Не покрыты критерии приемки: $displayCriteria" +
+                        if (uncoveredCriteria.size > 3) " и еще ${uncoveredCriteria.size - 3}" else "")
             }
         }
 
-        // 3. Находим непокрытые ключевые слова
-        val unmatchedKeywords = keywords - matchedKeywords
-        if (unmatchedKeywords.isNotEmpty() && unmatchedKeywords.size > keywords.size / 2) {
-            gaps.add("Не найдены тесты для ключевых понятий: ${unmatchedKeywords.joinToString(", ")}")
+        // 3. Анализ тегов
+        if (requirement.tags.isNotEmpty()) {
+            val testText = matches.joinToString(" ") {
+                "${it.testChunk.testName} ${it.testChunk.content} ${it.testChunk.metadata.values.joinToString(" ")}"
+            }.lowercase(Locale.getDefault())
+
+            val uncoveredTags = requirement.tags.filter { tag ->
+                !testText.contains(tag.lowercase(Locale.getDefault()), ignoreCase = true)
+            }
+
+            if (uncoveredTags.isNotEmpty() && uncoveredTags.size > requirement.tags.size / 2) {
+                gaps.add("Не найдены тесты для ключевых тегов: ${uncoveredTags.joinToString(", ")}")
+            }
         }
 
         // 4. Проверяем качество покрытия
@@ -213,13 +249,6 @@ class CoverageOpenAiAnalyzer(
             gaps.add("Все найденные соответствия имеют низкое семантическое сходство (< 0.5)")
         }
 
-        // 5. Используем AI анализ для выявления пробелов
-        aiAnalysis?.missingAspects?.takeIf { it.isNotEmpty() }?.let { missingAspects ->
-            if (missingAspects.size > 2) {
-                gaps.add("AI выявил ${missingAspects.size} непокрытых аспектов требования")
-            }
-        }
-
         return gaps
     }
 
@@ -229,7 +258,10 @@ class CoverageOpenAiAnalyzer(
             "for", "of", "with", "by", "as", "is", "are", "was", "were",
             "be", "been", "being", "have", "has", "had", "do", "does", "did",
             "will", "would", "should", "could", "can", "may", "might", "must",
-            "this", "that", "these", "those", "their", "our", "your", "my"
+            "this", "that", "these", "those", "their", "our", "your", "my",
+            "и", "в", "на", "с", "к", "для", "от", "по", "не", "что", "как",
+            "то", "все", "она", "они", "мы", "вы", "его", "ее", "их", "быть",
+            "был", "была", "были", "есть", "быть", "иметь", "имеет", "имели"
         )
 
         return text.lowercase(Locale.getDefault())
@@ -237,15 +269,14 @@ class CoverageOpenAiAnalyzer(
             .filter {
                 it.length > 3 &&
                         it !in stopWords &&
-                        !it.matches("\\d+".toRegex()) &&
-                        !it.matches(".*[^a-zA-Zа-яА-Я].*".toRegex())
+                        !it.matches("\\d+".toRegex())
             }
             .distinct()
             .toSet()
     }
 
     private fun generateEvidence(
-        requirement: Requirement,
+        requirement: BusinessRequirement,
         testChunk: TestChunk,
         similarity: Float
     ): String {
@@ -267,50 +298,81 @@ class CoverageOpenAiAnalyzer(
                 }
             }
 
-            // Выделяем ключевые слова
-            val keywords = extractKeywords(requirement.description)
-            val foundKeywords = keywords.filter { keyword ->
+            // Выделяем ключевые слова из критериев приемки
+            val allKeywords = mutableSetOf<String>()
+            allKeywords.addAll(extractKeywords(requirement.description))
+            requirement.acceptanceCriteria.forEach { criterion ->
+                allKeywords.addAll(extractKeywords(criterion))
+            }
+
+            val foundKeywords = allKeywords.filter { keyword ->
                 testChunk.content.contains(keyword, ignoreCase = true) ||
                         testChunk.testName.contains(keyword, ignoreCase = true)
             }
 
             if (foundKeywords.isNotEmpty()) {
-                append("🔑 Общие ключевые слова: ${foundKeywords.joinToString(", ")}\n")
+                append("🔑 Общие ключевые слова: ${foundKeywords.take(5).joinToString(", ")}")
+                if (foundKeywords.size > 5) {
+                    append(" и еще ${foundKeywords.size - 5}")
+                }
+                append("\n")
             }
         }
     }
 
-    // AI анализ
+    // AI анализ с учетом критериев приемки и тегов
     private fun analyzeWithAI(
-        requirement: Requirement,
+        requirement: BusinessRequirement,
         matches: List<MatchResult>,
         aiService: AiService
     ): AIAnalysis {
+        // Подготавливаем критерии приемки для анализа
+        val criteriaText = if (requirement.acceptanceCriteria.isNotEmpty()) {
+            """
+            === КРИТЕРИИ ПРИЕМКИ ===
+            ${requirement.acceptanceCriteria.mapIndexed { i, c -> "${i + 1}. $c" }.joinToString("\n")}
+            """.trimIndent()
+        } else {
+            "Критерии приемки не определены"
+        }
+
+        // Подготавливаем теги
+        val tagsText = if (requirement.tags.isNotEmpty()) {
+            "Теги: ${requirement.tags.joinToString(", ")}"
+        } else {
+            "Теги отсутствуют"
+        }
+
         // Подготавливаем топ-3 теста для анализа
         val topTests = matches.take(3).joinToString("\n\n") { match ->
             """
             📝 ТЕСТ: ${match.testChunk.testName}
             📁 ФАЙЛ: ${match.testChunk.filePath}
-            🎯 СХОДСТВО С ТРЕБОВАНИЕМ: ${"%.3f".format(match.similarityScore)}
-            📊 УВЕРЕННОСТЬ: ${match.confidence}
+            🎯 СХОДСТВО: ${"%.3f".format(match.similarityScore)}
+            💪 УВЕРЕННОСТЬ: ${match.confidence}
 
             КОД ТЕСТА:
             ```${getFileExtension(match.testChunk.filePath)}
-            ${match.testChunk.content.take(800)}
+            ${match.testChunk.content.take(1000)}
             ```
             """.trimIndent()
         }
 
-        // Формируем промпт для AI
+        // Расширенный промпт для AI с учетом критериев приемки
         val prompt = """
             Ты - старший QA инженер, проводящий аудит покрытия тестами.
 
-            ПРОАНАЛИЗИРУЙ, насколько следующие ТЕСТЫ покрывают БИЗНЕС-ТРЕБОВАНИЕ:
+            ПРОАНАЛИЗИРУЙ, насколько следующие ТЕСТЫ покрывают БИЗНЕС-ТРЕБОВАНИЕ и его КРИТЕРИИ ПРИЕМКИ:
 
             === БИЗНЕС-ТРЕБОВАНИЕ ===
+            ID: ${requirement.id}
             Название: ${requirement.title}
             Описание: ${requirement.description}
-            ID: ${requirement.id}
+            Категория: ${requirement.category}
+            Приоритет: ${requirement.priority}
+            $tagsText
+
+            $criteriaText
 
             === ТЕСТЫ ===
             $topTests
@@ -320,23 +382,20 @@ class CoverageOpenAiAnalyzer(
             {
               "coverage_assessment": "full|partial|none",
               "confidence": "high|medium|low",
-              "covered_aspects": ["аспект 1", "аспект 2", ...],
-              "missing_aspects": ["аспект 1", "аспект 2", ...],
-              "explanation": "Текстовое объяснение на русском языке",
-              "recommendations": ["рекомендация 1", "рекомендация 2", ...]
+              "covered_aspects": ["конкретный аспект 1", "конкретный аспект 2"],
+              "missing_aspects": ["непокрытый аспект 1", "непокрытый аспект 2"],
+              "covered_criteria": ["критерий 1", "критерий 2"],
+              "missing_criteria": ["критерий 1", "критерий 2"],
+              "explanation": "Подробное объяснение на русском языке с ссылками на код тестов",
+              "recommendations": ["конкретная рекомендация 1", "конкретная рекомендация 2"]
             }
 
-            КРИТЕРИИ:
-            1. "full" - требование полностью покрыто тестами
-            2. "partial" - требование частично покрыто
-            3. "none" - требование не покрыто
+            КРИТЕРИИ ОЦЕНКИ:
+            - "full": все критерии приемки покрыты тестами, высокое сходство (>0.7)
+            - "partial": частичное покрытие критериев или среднее сходство (0.4-0.7)
+            - "none": критерии не покрыты или сходство низкое (<0.4)
 
-            УВЕРЕННОСТЬ:
-            1. "high" - высокий уровень уверенности в анализе
-            2. "medium" - средний уровень уверенности
-            3. "low" - низкий уровень уверенности
-
-            Будь максимально конкретным и ссылайся на код тестов.
+            БУДЬ КОНКРЕТНЫМ: указывай номера строк, названия методов, конкретные проверки в тестах.
         """.trimIndent()
 
         // Получаем ответ от AI
@@ -348,12 +407,12 @@ class CoverageOpenAiAnalyzer(
 
     private fun parseAIResponse(
         response: String,
-        requirement: Requirement,
+        requirement: BusinessRequirement,
         matches: List<MatchResult>
     ): AIAnalysis {
         return try {
             // Пытаемся найти JSON в ответе
-            val jsonRegex = "\\{.*\\}".toRegex(RegexOption.DOT_MATCHES_ALL)
+            val jsonRegex = "\\{[^}]*\\}".toRegex(RegexOption.DOT_MATCHES_ALL)
             val jsonMatch = jsonRegex.find(response)
 
             if (jsonMatch != null) {
@@ -370,8 +429,10 @@ class CoverageOpenAiAnalyzer(
                 confidence = ConfidenceLevel.MEDIUM,
                 coveredAspects = emptyList(),
                 missingAspects = listOf("Не удалось разобрать AI ответ"),
-                explanation = "Ошибка парсинга AI анализа",
-                recommendations = emptyList()
+                explanation = "Ошибка парсинга AI анализа: ${e.message}",
+                recommendations = emptyList(),
+                coveredCriteria = emptyList(),
+                missingCriteria = emptyList()
             )
         }
     }
@@ -397,6 +458,8 @@ class CoverageOpenAiAnalyzer(
             val coveredAspects = extractJsonArray(jsonNode, "covered_aspects")
             val missingAspects = extractJsonArray(jsonNode, "missing_aspects")
             val recommendations = extractJsonArray(jsonNode, "recommendations")
+            val coveredCriteria = extractJsonArray(jsonNode, "covered_criteria")
+            val missingCriteria = extractJsonArray(jsonNode, "missing_criteria")
 
             AIAnalysis(
                 rawText = jsonText,
@@ -404,7 +467,9 @@ class CoverageOpenAiAnalyzer(
                 coveredAspects = coveredAspects,
                 missingAspects = missingAspects,
                 explanation = explanation,
-                recommendations = recommendations
+                recommendations = recommendations,
+                coveredCriteria = coveredCriteria,
+                missingCriteria = missingCriteria
             )
         } catch (e: Exception) {
             // Fallback на текстовый парсинг при ошибке
@@ -435,11 +500,13 @@ class CoverageOpenAiAnalyzer(
 
         val coveredAspects = mutableListOf<String>()
         val missingAspects = mutableListOf<String>()
+        val recommendations = mutableListOf<String>()
 
         // Ищем ключевые фразы
         val lines = text.lines()
         var inCoveredSection = false
         var inMissingSection = false
+        var inRecommendations = false
 
         for (line in lines) {
             when {
@@ -448,6 +515,7 @@ class CoverageOpenAiAnalyzer(
                         line.contains("есть", ignoreCase = true) -> {
                     inCoveredSection = true
                     inMissingSection = false
+                    inRecommendations = false
                 }
 
                 line.contains("не покрыт", ignoreCase = true) ||
@@ -455,6 +523,14 @@ class CoverageOpenAiAnalyzer(
                         line.contains("нет", ignoreCase = true) -> {
                     inCoveredSection = false
                     inMissingSection = true
+                    inRecommendations = false
+                }
+
+                line.contains("рекоменд", ignoreCase = true) ||
+                        line.contains("recommend", ignoreCase = true) -> {
+                    inCoveredSection = false
+                    inMissingSection = false
+                    inRecommendations = true
                 }
 
                 line.contains("•") || line.contains("- ") || line.matches(".*\\d+\\..*".toRegex()) -> {
@@ -466,6 +542,7 @@ class CoverageOpenAiAnalyzer(
                     if (aspect.isNotBlank()) {
                         if (inCoveredSection) coveredAspects.add(aspect)
                         if (inMissingSection) missingAspects.add(aspect)
+                        if (inRecommendations) recommendations.add(aspect)
                     }
                 }
             }
@@ -476,8 +553,10 @@ class CoverageOpenAiAnalyzer(
             confidence = confidence,
             coveredAspects = coveredAspects,
             missingAspects = missingAspects,
-            explanation = "Текстовый анализ (структурированный ответ не найден)",
-            recommendations = emptyList()
+            explanation = "Текстовый анализ (структурированный ответ не найден). Анализ: $text.take(200)...",
+            recommendations = recommendations,
+            coveredCriteria = emptyList(),
+            missingCriteria = emptyList()
         )
     }
 
@@ -508,6 +587,16 @@ class CoverageOpenAiAnalyzer(
         println("  Средний: $mediumConfidence требований")
         println("  Низкий: $lowConfidence требований")
 
+        // Статистика по критериям приемки
+        val requirementsWithCriteria = reports.count { it.requirement.acceptanceCriteria.isNotEmpty() }
+        if (requirementsWithCriteria > 0) {
+            val avgCriteriaPerReq = reports.filter { it.requirement.acceptanceCriteria.isNotEmpty() }
+                .map { it.requirement.acceptanceCriteria.size }.average()
+            println("\n📋 Критерии приемки:")
+            println("  Требований с критериями: $requirementsWithCriteria")
+            println("  Среднее критериев на требование: ${"%.1f".format(avgCriteriaPerReq)}")
+        }
+
         // AI анализ статистика
         val aiAnalyses = reports.mapNotNull { it.aiAnalysis }
         if (aiAnalyses.isNotEmpty()) {
@@ -536,19 +625,21 @@ class CoverageOpenAiAnalyzer(
     }
 }
 
-// Обновленная структура AIAnalysis
+// Обновленная структура AIAnalysis с поддержкой критериев приемки
 data class AIAnalysis(
     val rawText: String,
     val confidence: ConfidenceLevel,
     val coveredAspects: List<String>,
     val missingAspects: List<String>,
     val explanation: String,
-    val recommendations: List<String>
+    val recommendations: List<String>,
+    val coveredCriteria: List<String> = emptyList(),
+    val missingCriteria: List<String> = emptyList()
 )
 
 // Обновленная структура CoverageReport
 data class CoverageReport(
-    val requirement: Requirement,
+    val requirement: BusinessRequirement,
     val matches: List<MatchResult>,
     val coverageScore: Float,
     val confidence: ConfidenceLevel,

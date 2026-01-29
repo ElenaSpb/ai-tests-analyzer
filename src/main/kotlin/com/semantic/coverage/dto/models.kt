@@ -9,16 +9,8 @@ data class TestChunk(
     val metadata: Map<String, String> = emptyMap()
 )
 
-//data class Requirement(
-//    val id: String,
-//    val title: String,
-//    val description: String,
-//    val category: String = "business",
-//    val embedding: FloatArray? = null
-//)
-
 data class MatchResult(
-    val requirement: Requirement,
+    val requirement: BusinessRequirement,
     val testChunk: TestChunk,
     val similarityScore: Float,
     val evidence: String = "",
