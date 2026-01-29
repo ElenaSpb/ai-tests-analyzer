@@ -50,7 +50,7 @@ fun main(args: Array<String>) {
         ArgType.String,
         shortName = "openai-key",
         description = "OpenAI API key"
-    ).default("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")
+    ).default("real-key")
 
     val ollamaUrl by parser.option(
         ArgType.String,
