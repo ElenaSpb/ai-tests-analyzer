@@ -1,4 +1,4 @@
-package analyze
+package com.semantic.coverage.analyze
 
 import com.semantic.coverage.aiServices.AiService
 import com.semantic.coverage.dto.ConfidenceLevel

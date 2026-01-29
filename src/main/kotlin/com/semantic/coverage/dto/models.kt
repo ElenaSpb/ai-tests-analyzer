@@ -25,15 +25,6 @@ data class MatchResult(
     val confidence: ConfidenceLevel
 )
 
-//data class CoverageReport(
-//    val requirement: Requirement,
-//    val matches: List<MatchResult>,
-//    val coverageScore: Float,
-//    val confidence: ConfidenceLevel,
-//    val gaps: List<String> = emptyList(),
-//    val timestamp: String = java.time.LocalDateTime.now().toString()
-//)
-
 enum class ConfidenceLevel {
     HIGH,    // similarity > 0.7 и четкая семантическая связь
     MEDIUM,  // similarity 0.4-0.7 или косвенная связь

@@ -1,4 +1,4 @@
-package analyze
+package com.semantic.coverage.analyze
 
 import com.semantic.coverage.dto.ConfidenceLevel
 import com.semantic.coverage.embedding.LocalEmbeddingService

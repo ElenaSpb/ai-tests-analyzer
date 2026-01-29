@@ -1,7 +1,7 @@
 package com.semantic.coverage.report
 
 import com.semantic.coverage.dto.ConfidenceLevel
-import analyze.CoverageReport
+import com.semantic.coverage.analyze.CoverageReport
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
