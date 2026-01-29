@@ -82,8 +82,8 @@
 
 ## 2. Coverage Report (Анализ покрытия)
 
-### Проект: BrainUp Auditory Training Platform
-- **Репозиторий**: `https://github.com/Brain-up/brn` 
+### Проект: BrainUp Auditory Training Platform www.brainup.site
+- **Репозиторий проекта для анализа**: `https://github.com/Brain-up/brn` 
 - **Проанализировано**: 118 тестовых файлов
 - **Требований**: 5 бизнес-требований с критериями приемки
 
@@ -102,7 +102,6 @@
 **Требование**: "Пользователь может зарегистрироваться в системе, указав email и пароль..."
 
 **Найденные тесты:**
-
 1. **`UserRegistrationTest.testRegistrationWithValidData()`**
     - **Сходство**: 0.87
     - **Доказательства**: Тест проверяет создание пользователя, валидацию email, сохранение в БД
@@ -123,6 +122,7 @@ fun `test registration with valid email and password`() {
     - **Общие ключевые слова**: email, verification, send, confirmation
 
 ---
+
 
 ## 3. Risk & Robustness (Риски и устойчивость)
 
