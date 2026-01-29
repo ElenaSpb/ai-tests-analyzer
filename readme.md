@@ -178,6 +178,44 @@ fun `test registration with valid email and password`() {
 ---
 
 ## 4. Demo Summary (Результаты демонстрации)
+Варианты запуска программы
+### Полный пример с кастомными настройками
+semantic-coverage \
+-p "/projects/myapp/tests" \
+-r "/docs/requirements.json" \
+-o "/var/www/coverage.html" \
+-m 200 \
+-ai true \
+-openai-key "sk-xxxxx"
+
+1. С OpenAI (требуется API ключ)
+semantic-coverage -ai true -openai-key "sk-xxxxx-your-api-key-xxxxx"
+
+2. С локальным Ollama
+semantic-coverage -ai true -ollama "http://localhost:11434"
+
+3.Без AI анализа
+semantic-coverage -ai false
+
+### Входные параметры semantic-coverage
+
+**Краткий справочник:**
+
+| Параметр | Короткая версия | Описание | Значение по умолчанию |
+|----------|----------------|----------|----------------------|
+| `--project-path` | `-p` | Путь к корневой директории проекта с тестами | `C:\brn\555\src\test\kotlin\com\epam\brn` |
+| `--requirements-path` | `-r` | Путь к файлу требований (JSON) | `requirements.json` |
+| `--output-path` | `-o` | Путь для сохранения HTML-отчета | `./coverage-report.html` |
+| `--max-files` | `-m` | Максимальное количество обрабатываемых тестовых файлов | `118` |
+| `--useAI` | `-ai` | Использовать AI-анализ (true/false) | `true` |
+| `--openai-key` | | API-ключ OpenAI | `real-key` |
+| `--ollama` | | URL сервера Ollama (если используется локальная модель) | `""` (пустая строка) |
+
+**Примечания:**
+- Все параметры опциональны (имеют значения по умолчанию)
+- `-ai true` требует указания либо `--openai-key`, либо `--ollama`
+- Программа работает с Kotlin/Java тестами
+- Требования должны быть в формате JSON
 
 ### Что получилось ✅
 
