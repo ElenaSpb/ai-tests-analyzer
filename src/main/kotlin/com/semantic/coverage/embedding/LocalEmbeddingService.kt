@@ -7,12 +7,10 @@ import kotlin.math.sqrt
 class LocalEmbeddingService : EmbeddingService {
     // Используем MiniLM модель через TensorFlow или локальную версию
     // Для прототипа можно использовать упрощенный TF Hub-подобный подход
-    private val modelPath = "models/all-MiniLM-L6-v2"
     private val dimension = 384 // Размерность для MiniLM
 
     // Кэш для уже вычисленных эмбеддингов
     private val embeddingCache = mutableMapOf<String, FloatArray>()
-
 
     override fun getEmbedding(text: String): FloatArray {
         return embeddingCache.getOrPut(text) {
