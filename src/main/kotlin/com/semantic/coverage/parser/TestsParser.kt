@@ -8,7 +8,7 @@ import kotlin.io.path.walk
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalPathApi::class)
-class TestParserNew {
+class TestsParser {
     private val testPatterns = listOf(
         "*Test.kt",
         "*Spec.kt",

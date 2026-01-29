@@ -1,25 +1,24 @@
 package analyze
 
+import com.semantic.coverage.aiServices.AiService
 import com.semantic.coverage.dto.ConfidenceLevel
-import com.semantic.coverage.embedding.LocalEmbeddingService
 import com.semantic.coverage.dto.MatchResult
-import com.semantic.coverage.dto.TestChunk
-import com.semantic.coverage.`ai-services`.AiService
 import com.semantic.coverage.dto.Requirement
+import com.semantic.coverage.dto.TestChunk
+import com.semantic.coverage.embedding.EmbeddingService
 import java.util.*
 
-class CoverageOpenAiAnalyzer (
-    private val embeddingService: LocalEmbeddingService,
+class CoverageOpenAiAnalyzer(
+    private val embeddingService: EmbeddingService,
     private val aiService: AiService? = null,
     private val useAI: Boolean = false,
     private val similarityThreshold: Float = 0.3f
 ) {
-
     fun analyzeCoverage(
         requirements: List<Requirement>,
         testChunks: List<TestChunk>
     ): List<CoverageReport> {
-        println("🧠 Начинаем анализ семантического покрытия...")
+        println("Начинаем анализ семантического покрытия...")
         println("   Требований: ${requirements.size}")
         println("   Тестовых чанков: ${testChunks.size}")
         println("   Использовать AI: $useAI")
@@ -48,7 +47,7 @@ class CoverageOpenAiAnalyzer (
         // 3. Для каждого требования ищем соответствия
         println("🔍 Поиск соответствий...")
         return requirementsWithEmbeddings.mapIndexed { index, requirement ->
-            println("   Требование ${index + 1}/${requirements.size}: ${requirement.title}")
+            println("Требование ${index + 1}/${requirements.size}: ${requirement.title}")
 
             val matches = findMatchesForRequirement(requirement, testChunksWithEmbeddings)
             val coverageScore = calculateCoverageScore(matches)
@@ -56,16 +55,15 @@ class CoverageOpenAiAnalyzer (
 
             // AI анализ (если включен и есть соответствия)
             val aiAnalysis = if (useAI && aiService != null && matches.isNotEmpty()) {
-                println("     🤖 Запуск AI анализа...")
+                println("Запуск AI анализа...")
                 try {
                     analyzeWithAI(requirement, matches, aiService)
                 } catch (e: Exception) {
-                    println("     ⚠️  Ошибка AI анализа: ${e.message}")
+                    println("Ошибка AI анализа: ${e.message}")
                     null
                 }
-            } else {
+            } else
                 null
-            }
 
             val confidence = calculateConfidenceLevel(matches, aiAnalysis)
 
@@ -97,7 +95,7 @@ class CoverageOpenAiAnalyzer (
         // Вычисляем семантическое сходство
         val matchResults = testChunksWithEmbeddings.map { chunk ->
             val similarity = embeddingService.cosineSimilarity(
-                requirement.embedding!!,
+                requirement.embedding,
                 chunk.embedding!!
             )
 
@@ -156,6 +154,7 @@ class CoverageOpenAiAnalyzer (
             return when (it.confidence) {
                 ConfidenceLevel.HIGH -> if (matches.any { m -> m.confidence == ConfidenceLevel.HIGH })
                     ConfidenceLevel.HIGH else ConfidenceLevel.MEDIUM
+
                 ConfidenceLevel.MEDIUM -> ConfidenceLevel.MEDIUM
                 ConfidenceLevel.LOW -> ConfidenceLevel.LOW
             }
@@ -450,12 +449,14 @@ class CoverageOpenAiAnalyzer (
                     inCoveredSection = true
                     inMissingSection = false
                 }
+
                 line.contains("не покрыт", ignoreCase = true) ||
                         line.contains("missing", ignoreCase = true) ||
                         line.contains("нет", ignoreCase = true) -> {
                     inCoveredSection = false
                     inMissingSection = true
                 }
+
                 line.contains("•") || line.contains("- ") || line.matches(".*\\d+\\..*".toRegex()) -> {
                     val aspect = line.substringAfter("•")
                         .substringAfter("- ")

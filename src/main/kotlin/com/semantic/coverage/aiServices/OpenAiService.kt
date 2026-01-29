@@ -1,5 +1,5 @@
 // OpenAIService.kt (реализация AIService)
-package com.semantic.coverage.`ai-services`
+package com.semantic.coverage.aiServices
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import okhttp3.*

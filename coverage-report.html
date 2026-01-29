@@ -467,7 +467,7 @@
 <div class="header">
     <h1>🧠 Semantic Coverage Report</h1>
     <div class="subtitle">
-        <p>Проект: Brain-up/brn | Сгенерировано: 2026-01-28 18:13:20</p>
+        <p>Проект: Brain-up/brn | Сгенерировано: 2026-01-29 10:45:25</p>
         <p>AI-powered анализ покрытия тестами бизнес-требований</p>
     </div>
 </div>
@@ -477,7 +477,7 @@
         <div class="stat-label">Всего требований</div>
     </div>
     <div class="stat-card">
-        <div class="stat-value coverage-high">27.7%</div>
+        <div class="stat-value coverage-high">24.4%</div>
         <div class="stat-label">Среднее покрытие</div>
     </div>
     <div class="stat-card">
@@ -485,7 +485,7 @@
         <div class="stat-label">Высокая уверенность</div>
     </div>
     <div class="stat-card">
-        <div class="stat-value coverage-low">4</div>
+        <div class="stat-value coverage-low">5</div>
         <div class="stat-label">Низкое покрытие (<30%)</div>
     </div>
     <div class="stat-card">
@@ -501,10 +501,10 @@
         </div>
         <div>
             <span class="coverage-badge coverage-low">
-                22.1%
+                23.0%
             </span>
-            <span class="confidence-badge confidence-low">
-                Low
+            <span class="confidence-badge confidence-medium">
+                Medium
             </span>
         </div>
     </div>
@@ -512,112 +512,86 @@
     <div class="requirement-description">
         Пользователь может зарегистрироваться в системе, указав email, пароль и подтвердив согласие с пользовательским соглашением. После регистрации система отправляет email подтверждения.
     </div>
-<div class="ai-analysis-section">
-    <h3>AI Analysis</h3>
-    
-    <div class="ai-explanation">
-        <strong>Общий вывод:</strong> Текстовый анализ (структурированный ответ не найден)
-    </div>
-    
-    <div class="ai-analysis-grid">
-        <div class="ai-aspect-card">
-            <h4>Покрытые аспекты</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-        
-        <div class="ai-aspect-card">
-            <h4>Непокрытые аспекты</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-        
-        <div class="ai-aspect-card">
-            <h4>Рекомендации</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-    </div>
-    
-    <details>
-        <summary>Полный AI анализ</summary>
-        <div class="details-content">
-            Error analyzing with OpenAI: OpenAI API error: 429 - 
-        </div>
-    </details>
-</div>
+                        <div class="ai-analysis-section">
+                            <h3>AI Analysis</h3>
+                            
+                            <div class="ai-explanation">
+                                <strong>Общий вывод:</strong> Представленный тест проверяет функциональность поиска пользователя по email, а не процесс регистрации пользователя с указанием email, пароля и подтверждением согласия с пользовательским соглашением, а также последующей отправкой email подтверждения. Таким образом, данный тест не покрывает ни одного из аспектов, указанных в бизнес-требовании REQ-AUTH-01.
+                            </div>
+                            
+                            <div class="ai-analysis-grid">
+                                <div class="ai-aspect-card">
+                                    <h4>Покрытые аспекты</h4>
+                                    <p style='opacity: 0.8;'>Нет данных</p>
+                                </div>
+                                
+                                <div class="ai-aspect-card">
+                                    <h4>Непокрытые аспекты</h4>
+                                    <ul class="ai-aspect-list">
+    <li>регистрация пользователя</li><li>ввод email</li><li>ввод пароля</li><li>подтверждение согласия с пользовательским соглашением</li><li>отправка email подтверждения</li>
+</ul>
+                                </div>
+                                
+                                <div class="ai-aspect-card">
+                                    <h4>Рекомендации</h4>
+                                    <ul class="ai-aspect-list">
+    <li>Добавить тесты, проверяющие успешную регистрацию пользователя с валидными данными</li><li>Добавить тесты на проверку валидации email и пароля</li><li>Добавить тесты, проверяющие обработку ситуации, когда пользователь не подтверждает согласие с пользовательским соглашением</li><li>Добавить тесты, проверяющие факт отправки email подтверждения после успешной регистрации</li>
+</ul>
+                                </div>
+                            </div>
+                            
+                            <details>
+                                <summary>Полный AI анализ</summary>
+                                <div class="details-content">
+                                    {
+  &quot;coverage_assessment&quot;: &quot;none&quot;,
+  &quot;confidence&quot;: &quot;high&quot;,
+  &quot;covered_aspects&quot;: [],
+  &quot;missing_aspects&quot;: [&quot;регистрация пользователя&quot;, &quot;ввод email&quot;, &quot;ввод пароля&quot;, &quot;подтверждение согласия с пользовательским соглашением&quot;, &quot;отправка email подтверждения&quot;],
+  &quot;explanation&quot;: &quot;Представленный тест проверяет функциональность поиска пользователя по email, а не процесс регистрации пользователя с указанием email, пароля и подтверждением согласия с пользовательским соглашением, а также последующей отправкой email подтверждения. Таким образом, данный тест не покрывает ни одного из аспектов, указанных в бизнес-требовании REQ-AUTH-01.&quot;,
+  &quot;recommendations&quot;: [&quot;Добавить тесты, проверяющие успешную регистрацию пользователя с валидными данными&quot;, &quot;Добавить тесты на проверку валидации email и пароля&quot;, &quot;Добавить тесты, проверяющие обработку ситуации, когда пользователь не подтверждает согласие с пользовательским соглашением&quot;, &quot;Добавить тесты, проверяющие факт отправки email подтверждения после успешной регистрации&quot;]
+}
+                                </div>
+                            </details>
+                        </div>
 <div class="matches-section">
-    <h3>Найденные соответствия (2)</h3>
+    <h3>Найденные соответствия (1)</h3>
     <div class="matches-grid">
                             <div class="match-card">
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.315
+                                        0.339
                                         <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
                                             Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    FirebaseTokenAuthenticationFilterTest.kt
+                                    UserAccountServiceTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `should set authentication by NULL when user not exist in local DB and not returning from firebase DB`() {
-        // GIVEN
-        val requestMock = MockHttpServletRequest(HttpMethod.GE...
+        fun `should find a user by email`() {
+            // GIVEN
+            val email = &quot;email&quot;
+            every { userAccount.toDto() } returns userAccountDto
+            every { userAccoun...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-🎯 Сходство: 0.315
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+🎯 Сходство: 0.339
 ---
 Код теста:
   @Test
-      fun `should set authentication by NULL when user not exist in local DB and not returning from firebase DB`() {
-          // GIVEN
-          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-          val tokenMock = &quot;firebaseTokenMock&quot;
-  ... (еще 39 строк)
-🔑 Общие ключевые слова: email
-
-                                    </div>
-                                </details>
-                            </div>
-                            <div class="match-card">
-                                <div class="match-header">
-                                    <div class="match-name">test_method_61708530</div>
-                                    <div class="match-similarity">
-                                        0.314
-                                        <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
-                                            Low
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="match-file">
-                                    RoleServiceImplTest.kt
-                                </div>
-                                <div class="match-snippet">
-                                    @Test
-    fun `should check users roles`() {
-        // GIVEN
-        val user = UserAccountDto(email = &quot;email&quot;, bornYear = 1111, name = &quot;name&quot;, gender = BrnGender.FEMALE)
-        user.roles = mutable...
-                                </div>
-                                <details style="margin-top: 10px;">
-                                    <summary>Доказательства</summary>
-                                    <div class="details-content">
-                                        📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-🎯 Сходство: 0.314
----
-Код теста:
-  @Test
-      fun `should check users roles`() {
-          // GIVEN
-          val user = UserAccountDto(email = &quot;email&quot;, bornYear = 1111, name = &quot;name&quot;, gender = BrnGender.FEMALE)
-          user.roles = mutableSetOf(&quot;USER&quot;)
-  ... (еще 7 строк)
+          fun `should find a user by email`() {
+              // GIVEN
+              val email = &quot;email&quot;
+              every { userAccount.toDto() } returns userAccountDto
+  ... (еще 9 строк)
 🔑 Общие ключевые слова: email
 
                                     </div>
@@ -636,23 +610,17 @@
                                 <summary>Детальная информация</summary>
                                 <div class="details-content">
                                     ID требования: REQ-AUTH-01
-                                    Время анализа: 2026-01-28T18:13:19.015066900
-                                    Количество соответствий: 2
-                                    Максимальное сходство: 0.3148578
-                                    Среднее сходство: 0.314307302236557
+                                    Время анализа: 2026-01-29T10:44:40.472482300
+                                    Количество соответствий: 1
+                                    Максимальное сходство: 0.33929682
+                                    Среднее сходство: 0.339296817779541
                                     
                                     ТЕСТЫ:
                                     ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-Сходство: 0.3148578
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.33929682
 Уверенность: LOW
-Метрики: {className=, line=264, fileSize=11339}
-
-====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-Сходство: 0.3137568
-Уверенность: LOW
-Метрики: {className=, line=137, fileSize=4343}
+Метрики: {className=, line=117, fileSize=25334}
                                 </div>
                             </details>
                         </div>
@@ -665,10 +633,10 @@
         </div>
         <div>
             <span class="coverage-badge coverage-low">
-                28.1%
+                23.7%
             </span>
-            <span class="confidence-badge confidence-low">
-                Low
+            <span class="confidence-badge confidence-medium">
+                Medium
             </span>
         </div>
     </div>
@@ -676,72 +644,179 @@
     <div class="requirement-description">
         Пользователь может войти в систему, используя email и пароль. Система создает сессию с JWT-токеном и сохраняет её. Пользователь может выйти из системы, что завершает сессию.
     </div>
-<div class="ai-analysis-section">
-    <h3>AI Analysis</h3>
-    
-    <div class="ai-explanation">
-        <strong>Общий вывод:</strong> Текстовый анализ (структурированный ответ не найден)
-    </div>
-    
-    <div class="ai-analysis-grid">
-        <div class="ai-aspect-card">
-            <h4>Покрытые аспекты</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-        
-        <div class="ai-aspect-card">
-            <h4>Непокрытые аспекты</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-        
-        <div class="ai-aspect-card">
-            <h4>Рекомендации</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-    </div>
-    
-    <details>
-        <summary>Полный AI анализ</summary>
-        <div class="details-content">
-            Error analyzing with OpenAI: OpenAI API error: 429 - 
-        </div>
-    </details>
-</div>
+                        <div class="ai-analysis-section">
+                            <h3>AI Analysis</h3>
+                            
+                            <div class="ai-explanation">
+                                <strong>Общий вывод:</strong> Предоставленные тесты покрывают только часть бизнес-требований. Первый тест проверяет возможность получения информации о текущем пользователе из сессии, что косвенно связано с управлением сессией, но не тестирует процесс логина и создание сессии напрямую. Второй тест проверяет обновление информации о последнем визите пользователя, что также связано с управлением сессиями, но не затрагивает процесс создания или завершения сессии. Третий тест, судя по неполному описанию, касается обновления информации о пользователе, что не связано с процессом логина или управлением сессиями напрямую.
+                            </div>
+                            
+                            <div class="ai-analysis-grid">
+                                <div class="ai-aspect-card">
+                                    <h4>Покрытые аспекты</h4>
+                                    <ul class="ai-aspect-list">
+    <li>получение информации о текущем пользователе</li><li>обновление информации о посещении текущим пользователем</li>
+</ul>
+                                </div>
+                                
+                                <div class="ai-aspect-card">
+                                    <h4>Непокрытые аспекты</h4>
+                                    <ul class="ai-aspect-list">
+    <li>вход в систему с использованием email и пароля</li><li>создание сессии с JWT-токеном</li><li>сохранение сессии</li><li>выход из системы и завершение сессии</li>
+</ul>
+                                </div>
+                                
+                                <div class="ai-aspect-card">
+                                    <h4>Рекомендации</h4>
+                                    <ul class="ai-aspect-list">
+    <li>Необходимо разработать тесты, которые будут проверять процесс аутентификации пользователя с использованием email и пароля.</li><li>Добавить тесты, проверяющие создание сессии с JWT-токеном и её сохранение.</li><li>Разработать тесты для проверки процесса выхода из системы и завершения сессии.</li>
+</ul>
+                                </div>
+                            </div>
+                            
+                            <details>
+                                <summary>Полный AI анализ</summary>
+                                <div class="details-content">
+                                    {
+  &quot;coverage_assessment&quot;: &quot;partial&quot;,
+  &quot;confidence&quot;: &quot;medium&quot;,
+  &quot;covered_aspects&quot;: [
+    &quot;получение информации о текущем пользователе&quot;,
+    &quot;обновление информации о посещении текущим пользователем&quot;
+  ],
+  &quot;missing_aspects&quot;: [
+    &quot;вход в систему с использованием email и пароля&quot;,
+    &quot;создание сессии с JWT-токеном&quot;,
+    &quot;сохранение сессии&quot;,
+    &quot;выход из системы и завершение сессии&quot;
+  ],
+  &quot;explanation&quot;: &quot;Предоставленные тесты покрывают только часть бизнес-требований. Первый тест проверяет возможность получения информации о текущем пользователе из сессии, что косвенно связано с управлением сессией, но не тестирует процесс логина и создание сессии напрямую. Второй тест проверяет обновление информации о последнем визите пользователя, что также связано с управлением сессиями, но не затрагивает процесс создания или завершения сессии. Третий тест, судя по неполному описанию, касается обновления информации о пользователе, что не связано с процессом логина или управлением сессиями напрямую.&quot;,
+  &quot;recommendations&quot;: [
+    &quot;Необходимо разработать тесты, которые будут проверять процесс аутентификации пользователя с использованием email и пароля.&quot;,
+    &quot;Добавить тесты, проверяющие создание сессии с JWT-токеном и её сохранение.&quot;,
+    &quot;Разработать тесты для проверки процесса выхода из системы и завершения сессии.&quot;
+  ]
+}
+                                </div>
+                            </details>
+                        </div>
 <div class="matches-section">
-    <h3>Найденные соответствия (10)</h3>
+    <h3>Найденные соответствия (9)</h3>
     <div class="matches-grid">
                             <div class="match-card">
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.419
-                                        <span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
-                                            Medium
+                                        0.355
+                                        <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+                                            Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    FirebaseTokenAuthenticationFilterTest.kt
+                                    UserDetailControllerTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `should set authentication by NULL when user not exist in local DB and not returning from firebase DB`() {
-        // GIVEN
-        val requestMock = MockHttpServletRequest(HttpMethod.GE...
+        fun `should get logged in user from the current session`() {
+            // GIVEN
+            every { userAccountService.getCurrentUserDto() } returns userAccountDto
+
+            // WHEN...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-🎯 Сходство: 0.419
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\UserDetailControllerTest.kt
+🎯 Сходство: 0.355
 ---
 Код теста:
   @Test
-      fun `should set authentication by NULL when user not exist in local DB and not returning from firebase DB`() {
-          // GIVEN
-          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-          val tokenMock = &quot;firebaseTokenMock&quot;
+          fun `should get logged in user from the current session`() {
+              // GIVEN
+              every { userAccountService.getCurrentUserDto() } returns userAccountDto
+  
+  ... (еще 11 строк)
+
+                                    </div>
+                                </details>
+                            </div>
+                            <div class="match-card">
+                                <div class="match-header">
+                                    <div class="match-name">test_method_61708530</div>
+                                    <div class="match-similarity">
+                                        0.338
+                                        <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+                                            Low
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="match-file">
+                                    UserAccountServiceTest.kt
+                                </div>
+                                <div class="match-snippet">
+                                    @Test
+        fun `should mark visit for current session user`() {
+            // GIVEN
+            val email = &quot;test@test.ru&quot;
+            val now = LocalDateTime.now(ZoneOffset.UTC)
+
+            Secu...
+                                </div>
+                                <details style="margin-top: 10px;">
+                                    <summary>Доказательства</summary>
+                                    <div class="details-content">
+                                        📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+🎯 Сходство: 0.338
+---
+Код теста:
+  @Test
+          fun `should mark visit for current session user`() {
+              // GIVEN
+              val email = &quot;test@test.ru&quot;
+              val now = LocalDateTime.now(ZoneOffset.UTC)
+  ... (еще 19 строк)
+🔑 Общие ключевые слова: email
+
+                                    </div>
+                                </details>
+                            </div>
+                            <div class="match-card">
+                                <div class="match-header">
+                                    <div class="match-name">test_method_61708530</div>
+                                    <div class="match-similarity">
+                                        0.331
+                                        <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+                                            Low
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="match-file">
+                                    UserAccountServiceTest.kt
+                                </div>
+                                <div class="match-snippet">
+                                    @Test
+        fun `should update current session user`() {
+            // GIVEN
+            val avatarUrl = &quot;test/avatar&quot;
+            val photoUrl = &quot;test/picture&quot;
+            val description = &quot;Some ...
+                                </div>
+                                <details style="margin-top: 10px;">
+                                    <summary>Доказательства</summary>
+                                    <div class="details-content">
+                                        📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+🎯 Сходство: 0.331
+---
+Код теста:
+  @Test
+          fun `should update current session user`() {
+              // GIVEN
+              val avatarUrl = &quot;test/avatar&quot;
+              val photoUrl = &quot;test/picture&quot;
   ... (еще 39 строк)
 🔑 Общие ключевые слова: email
 
@@ -752,78 +827,38 @@
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.385
+                                        0.320
                                         <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
                                             Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    RoleServiceImplTest.kt
+                                    UserAccountServiceTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `findById should get role with roleId`() {
-        // GIVEN
-        val roleIdLong = 1L
-        val role =
-            Role(
-                id = 1L,
-                name = &quot;FirstName&quot;,
-...
+        fun `should update avatar current session user`() {
+            // GIVEN
+            val avatarUrl = &quot;test/avatar&quot;
+            val email = &quot;test@test.ru&quot;
+            val userAccount =
+  ...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-🎯 Сходство: 0.385
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+🎯 Сходство: 0.320
 ---
 Код теста:
   @Test
-      fun `findById should get role with roleId`() {
-          // GIVEN
-          val roleIdLong = 1L
-          val role =
-  ... (еще 15 строк)
-
-                                    </div>
-                                </details>
-                            </div>
-                            <div class="match-card">
-                                <div class="match-header">
-                                    <div class="match-name">test_method_61708530</div>
-                                    <div class="match-similarity">
-                                        0.378
-                                        <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
-                                            Low
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="match-file">
-                                    FirebaseTokenAuthenticationFilterTest.kt
-                                </div>
-                                <div class="match-snippet">
-                                    @Test
-    fun `should set authentication when user exist in local DB`() {
-        // GIVEN
-        val request = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-        val token = &quot;firebaseToken...
-                                </div>
-                                <details style="margin-top: 10px;">
-                                    <summary>Доказательства</summary>
-                                    <div class="details-content">
-                                        📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-🎯 Сходство: 0.378
----
-Код теста:
-  @Test
-      fun `should set authentication when user exist in local DB`() {
-          // GIVEN
-          val request = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-          val token = &quot;firebaseTokenMock&quot;
-  ... (еще 33 строк)
+          fun `should update avatar current session user`() {
+              // GIVEN
+              val avatarUrl = &quot;test/avatar&quot;
+              val email = &quot;test@test.ru&quot;
+  ... (еще 31 строк)
 🔑 Общие ключевые слова: email
 
                                     </div>
@@ -833,81 +868,44 @@
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.372
+                                        0.314
                                         <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
                                             Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    FirebaseTokenAuthenticationFilterTest.kt
+                                    UserAccountServiceTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `should set authentication when user not exist in local DB`() {
-        // GIVEN
-        val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-        val tokenMock = &quot;f...
+        fun `should find a user by email`() {
+            // GIVEN
+            val email = &quot;email&quot;
+            every { userAccount.toDto() } returns userAccountDto
+            every { userAccoun...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-🎯 Сходство: 0.372
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+🎯 Сходство: 0.314
 ---
 Код теста:
   @Test
-      fun `should set authentication when user not exist in local DB`() {
-          // GIVEN
-          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-          val tokenMock = &quot;firebaseTokenMock&quot;
-  ... (еще 35 строк)
+          fun `should find a user by email`() {
+              // GIVEN
+              val email = &quot;email&quot;
+              every { userAccount.toDto() } returns userAccountDto
+  ... (еще 9 строк)
 🔑 Общие ключевые слова: email
-
-                                    </div>
-                                </details>
-                            </div>
-                            <div class="match-card">
-                                <div class="match-header">
-                                    <div class="match-name">test_method_61708530</div>
-                                    <div class="match-similarity">
-                                        0.359
-                                        <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
-                                            Low
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="match-file">
-                                    FirebaseTokenAuthenticationFilterTest.kt
-                                </div>
-                                <div class="match-snippet">
-                                    @Test
-    fun `should set authentication by NULL when token invalid`() {
-        // GIVEN
-        val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-        val tokenMock = &quot;fireba...
-                                </div>
-                                <details style="margin-top: 10px;">
-                                    <summary>Доказательства</summary>
-                                    <div class="details-content">
-                                        📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-🎯 Сходство: 0.359
----
-Код теста:
-  @Test
-      fun `should set authentication by NULL when token invalid`() {
-          // GIVEN
-          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-          val tokenMock = &quot;firebaseTokenMock&quot;
-  ... (еще 27 строк)
 
                                     </div>
                                 </details>
                             </div>
 <div class="match-card" style="text-align: center; padding: 30px;">
-    <p>... и еще 5 соответствий</p>
+    <p>... и еще 4 соответствий</p>
 </div>
     </div>
 </div>
@@ -922,87 +920,81 @@
                                 <summary>Детальная информация</summary>
                                 <div class="details-content">
                                     ID требования: REQ-AUTH-02
-                                    Время анализа: 2026-01-28T18:13:19.385964200
-                                    Количество соответствий: 10
-                                    Максимальное сходство: 0.4190704
-                                    Среднее сходство: 0.3605324596166611
+                                    Время анализа: 2026-01-29T10:44:52.359146
+                                    Количество соответствий: 9
+                                    Максимальное сходство: 0.35542464
+                                    Среднее сходство: 0.3200785120328267
                                     
                                     ТЕСТЫ:
                                     ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-Сходство: 0.4190704
-Уверенность: MEDIUM
-Метрики: {className=, line=264, fileSize=11339}
-
-====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-Сходство: 0.38534448
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\UserDetailControllerTest.kt
+Сходство: 0.35542464
 Уверенность: LOW
-Метрики: {className=, line=50, fileSize=4343}
+Метрики: {className=, line=104, fileSize=13281}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.33775318
+Уверенность: LOW
+Метрики: {className=, line=331, fileSize=25334}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.33084777
+Уверенность: LOW
+Метрики: {className=, line=308, fileSize=25334}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.320354
+Уверенность: LOW
+Метрики: {className=, line=257, fileSize=25334}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.31444886
+Уверенность: LOW
+Метрики: {className=, line=117, fileSize=25334}
 
 ====== ТЕСТ: test_method_61708530 ======
 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-Сходство: 0.3778027
+Сходство: 0.3138571
 Уверенность: LOW
 Метрики: {className=, line=114, fileSize=11339}
 
 ====== ТЕСТ: test_method_61708530 ======
 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-Сходство: 0.37243655
+Сходство: 0.30488327
 Уверенность: LOW
 Метрики: {className=, line=157, fileSize=11339}
 
 ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-Сходство: 0.3592656
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.30253655
 Уверенность: LOW
-Метрики: {className=, line=188, fileSize=11339}
+Метрики: {className=, line=197, fileSize=25334}
 
 ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-Сходство: 0.35096282
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.3006012
 Уверенность: LOW
-Метрики: {className=, line=148, fileSize=4343}
-
-====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-Сходство: 0.34133214
-Уверенность: LOW
-Метрики: {className=, line=214, fileSize=11339}
-
-====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-Сходство: 0.33581966
-Уверенность: LOW
-Метрики: {className=, line=69, fileSize=4343}
-
-====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-Сходство: 0.33388835
-Уверенность: LOW
-Метрики: {className=, line=137, fileSize=4343}
-
-====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\RememberLastVisitFilterTest.kt
-Сходство: 0.3294019
-Уверенность: LOW
-Метрики: {className=, line=56, fileSize=2658}
+Метрики: {className=, line=541, fileSize=25334}
                                 </div>
                             </details>
                         </div>
 </div>
-<div class="requirement-card medium-coverage">
+<div class="requirement-card low-coverage">
     <div class="requirement-header">
         <div class="requirement-title">
             <div class="requirement-id">REQ-EXERCISE-01</div>
             <h2>3. Audio Exercise Playback and Progress Tracking</h2>
         </div>
         <div>
-            <span class="coverage-badge coverage-medium">
-                42.5%
+            <span class="coverage-badge coverage-low">
+                27.5%
             </span>
-            <span class="confidence-badge confidence-low">
-                Low
+            <span class="confidence-badge confidence-medium">
+                Medium
             </span>
         </div>
     </div>
@@ -1010,37 +1002,61 @@
     <div class="requirement-description">
         Пользователь может прослушивать аудио-упражнения из доступных серий. Система отслеживает прогресс выполнения упражнений, сохраняет результаты и позволяет продолжить с места остановки.
     </div>
-<div class="ai-analysis-section">
-    <h3>AI Analysis</h3>
-    
-    <div class="ai-explanation">
-        <strong>Общий вывод:</strong> Текстовый анализ (структурированный ответ не найден)
-    </div>
-    
-    <div class="ai-analysis-grid">
-        <div class="ai-aspect-card">
-            <h4>Покрытые аспекты</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-        
-        <div class="ai-aspect-card">
-            <h4>Непокрытые аспекты</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-        
-        <div class="ai-aspect-card">
-            <h4>Рекомендации</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-    </div>
-    
-    <details>
-        <summary>Полный AI анализ</summary>
-        <div class="details-content">
-            Error analyzing with OpenAI: OpenAI API error: 429 - 
-        </div>
-    </details>
-</div>
+                        <div class="ai-analysis-section">
+                            <h3>AI Analysis</h3>
+                            
+                            <div class="ai-explanation">
+                                <strong>Общий вывод:</strong> Представленные тесты частично покрывают бизнес-требование. Они фокусируются на проверке логики подготовки аудио-потока и метаданных аудио-файла для пользователя на основе его истории выполнения упражнений, что соответствует отслеживанию прогресса и адаптации воспроизведения аудио. Однако, в тестах не рассматривается функциональность, позволяющая пользователю продолжить выполнение упражнений с места остановки, а также не проверяется доступность различных серий аудио-упражнений, что является ключевым аспектом бизнес-требования. Уверенность в анализе средняя, так как анализ основан на предоставленных фрагментах кода тестов, которые не дают полного представления о всем спектре покрытия тестами.
+                            </div>
+                            
+                            <div class="ai-analysis-grid">
+                                <div class="ai-aspect-card">
+                                    <h4>Покрытые аспекты</h4>
+                                    <ul class="ai-aspect-list">
+    <li>отслеживание прогресса выполнения упражнений</li><li>сохранение результатов выполнения упражнений</li><li>воспроизведение аудио-упражнений с учетом статистики выполнения</li>
+</ul>
+                                </div>
+                                
+                                <div class="ai-aspect-card">
+                                    <h4>Непокрытые аспекты</h4>
+                                    <ul class="ai-aspect-list">
+    <li>возможность продолжить выполнение упражнений с места остановки</li><li>доступность различных серий аудио-упражнений</li>
+</ul>
+                                </div>
+                                
+                                <div class="ai-aspect-card">
+                                    <h4>Рекомендации</h4>
+                                    <ul class="ai-aspect-list">
+    <li>Разработать тесты, проверяющие возможность продолжения выполнения упражнений с места остановки.</li><li>Добавить тесты на проверку доступности различных серий аудио-упражнений для пользователя.</li><li>Увеличить уверенность в покрытии тестами, обеспечив полное тестирование всех аспектов бизнес-требования.</li>
+</ul>
+                                </div>
+                            </div>
+                            
+                            <details>
+                                <summary>Полный AI анализ</summary>
+                                <div class="details-content">
+                                    {
+  &quot;coverage_assessment&quot;: &quot;partial&quot;,
+  &quot;confidence&quot;: &quot;medium&quot;,
+  &quot;covered_aspects&quot;: [
+    &quot;отслеживание прогресса выполнения упражнений&quot;,
+    &quot;сохранение результатов выполнения упражнений&quot;,
+    &quot;воспроизведение аудио-упражнений с учетом статистики выполнения&quot;
+  ],
+  &quot;missing_aspects&quot;: [
+    &quot;возможность продолжить выполнение упражнений с места остановки&quot;,
+    &quot;доступность различных серий аудио-упражнений&quot;
+  ],
+  &quot;explanation&quot;: &quot;Представленные тесты частично покрывают бизнес-требование. Они фокусируются на проверке логики подготовки аудио-потока и метаданных аудио-файла для пользователя на основе его истории выполнения упражнений, что соответствует отслеживанию прогресса и адаптации воспроизведения аудио. Однако, в тестах не рассматривается функциональность, позволяющая пользователю продолжить выполнение упражнений с места остановки, а также не проверяется доступность различных серий аудио-упражнений, что является ключевым аспектом бизнес-требования. Уверенность в анализе средняя, так как анализ основан на предоставленных фрагментах кода тестов, которые не дают полного представления о всем спектре покрытия тестами.&quot;,
+  &quot;recommendations&quot;: [
+    &quot;Разработать тесты, проверяющие возможность продолжения выполнения упражнений с места остановки.&quot;,
+    &quot;Добавить тесты на проверку доступности различных серий аудио-упражнений для пользователя.&quot;,
+    &quot;Увеличить уверенность в покрытии тестами, обеспечив полное тестирование всех аспектов бизнес-требования.&quot;
+  ]
+}
+                                </div>
+                            </details>
+                        </div>
 <div class="matches-section">
     <h3>Найденные соответствия (10)</h3>
     <div class="matches-grid">
@@ -1048,35 +1064,37 @@
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.446
+                                        0.402
                                         <span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
                                             Medium
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    FirebaseTokenAuthenticationFilterTest.kt
+                                    UserAnalyticsServiceTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `should set authentication by NULL when user not exist in local DB and not returning from firebase DB`() {
+    fun `should prepareAudioStreamForUser`() {
         // GIVEN
-        val requestMock = MockHttpServletRequest(HttpMethod.GE...
+        val studyHistory = mockk&lt;StudyHistory&gt;()
+        val audioStreamMock = InputStream.nullInputStream()
+        val currentUs...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-🎯 Сходство: 0.446
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+🎯 Сходство: 0.402
 ---
 Код теста:
   @Test
-      fun `should set authentication by NULL when user not exist in local DB and not returning from firebase DB`() {
+      fun `should prepareAudioStreamForUser`() {
           // GIVEN
-          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-          val tokenMock = &quot;firebaseTokenMock&quot;
-  ... (еще 39 строк)
+          val studyHistory = mockk&lt;StudyHistory&gt;()
+          val audioStreamMock = InputStream.nullInputStream()
+  ... (еще 22 строк)
 
                                     </div>
                                 </details>
@@ -1085,36 +1103,36 @@
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.435
-                                        <span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
-                                            Medium
+                                        0.391
+                                        <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+                                            Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    FirebaseTokenAuthenticationFilterTest.kt
+                                    UserAnalyticsServiceTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `should set authentication when user exist in local DB`() {
+    fun `should prepareAudioFileMetaData default speed correctly for one word and good statistics`() {
         // GIVEN
-        val request = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-        val token = &quot;firebaseToken...
+        val studyHistory = mockk&lt;StudyHistory&gt;()
+        val currentUser =...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-🎯 Сходство: 0.435
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+🎯 Сходство: 0.391
 ---
 Код теста:
   @Test
-      fun `should set authentication when user exist in local DB`() {
+      fun `should prepareAudioFileMetaData default speed correctly for one word and good statistics`() {
           // GIVEN
-          val request = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-          val token = &quot;firebaseTokenMock&quot;
-  ... (еще 33 строк)
+          val studyHistory = mockk&lt;StudyHistory&gt;()
+          val currentUser = mockk&lt;UserAccount&gt;()
+  ... (еще 22 строк)
 
                                     </div>
                                 </details>
@@ -1123,40 +1141,36 @@
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.419
-                                        <span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
-                                            Medium
+                                        0.387
+                                        <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+                                            Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    RoleServiceImplTest.kt
+                                    UserAnalyticsServiceTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `findByName should return role`() {
+    fun `should prepareAudioFileMetaData without adding comma and slowest speed for words with bad stat PHRASES`() {
         // GIVEN
-        val roleName = &quot;Name&quot;
-        val role =
-            Role(
-                id = 1L,
-                name = &quot;FirstName&quot;,
-     ...
+        val studyHistory = mockk&lt;StudyHistory&gt;()
+        val...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-🎯 Сходство: 0.419
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+🎯 Сходство: 0.387
 ---
 Код теста:
   @Test
-      fun `findByName should return role`() {
+      fun `should prepareAudioFileMetaData without adding comma and slowest speed for words with bad stat PHRASES`() {
           // GIVEN
-          val roleName = &quot;Name&quot;
-          val role =
-  ... (еще 15 строк)
+          val studyHistory = mockk&lt;StudyHistory&gt;()
+          val currentUser = mockk&lt;UserAccount&gt;()
+  ... (еще 22 строк)
 
                                     </div>
                                 </details>
@@ -1165,36 +1179,36 @@
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.418
-                                        <span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
-                                            Medium
+                                        0.384
+                                        <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+                                            Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    FirebaseTokenAuthenticationFilterTest.kt
+                                    UserAnalyticsServiceTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `should set authentication when user not exist in local DB`() {
+    fun `should prepareAudioFileMetaData with lera voice up to 18 years old user`() {
         // GIVEN
-        val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-        val tokenMock = &quot;f...
+        val studyHistory = mockk&lt;StudyHistory&gt;()
+        val currentUser = mockk&lt;UserAccoun...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-🎯 Сходство: 0.418
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+🎯 Сходство: 0.384
 ---
 Код теста:
   @Test
-      fun `should set authentication when user not exist in local DB`() {
+      fun `should prepareAudioFileMetaData with lera voice up to 18 years old user`() {
           // GIVEN
-          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-          val tokenMock = &quot;firebaseTokenMock&quot;
-  ... (еще 35 строк)
+          val studyHistory = mockk&lt;StudyHistory&gt;()
+          val currentUser = mockk&lt;UserAccount&gt;()
+  ... (еще 18 строк)
 
                                     </div>
                                 </details>
@@ -1203,40 +1217,36 @@
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.415
-                                        <span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
-                                            Medium
+                                        0.383
+                                        <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+                                            Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    RoleServiceImplTest.kt
+                                    UserAnalyticsServiceTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `findById should get role with roleId`() {
+    fun `should prepareAudioFileMetaData with adding comma and slow speed for words with good stat WORDS`() {
         // GIVEN
-        val roleIdLong = 1L
-        val role =
-            Role(
-                id = 1L,
-                name = &quot;FirstName&quot;,
-...
+        val studyHistory = mockk&lt;StudyHistory&gt;()
+        val curren...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-🎯 Сходство: 0.415
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+🎯 Сходство: 0.383
 ---
 Код теста:
   @Test
-      fun `findById should get role with roleId`() {
+      fun `should prepareAudioFileMetaData with adding comma and slow speed for words with good stat WORDS`() {
           // GIVEN
-          val roleIdLong = 1L
-          val role =
-  ... (еще 15 строк)
+          val studyHistory = mockk&lt;StudyHistory&gt;()
+          val currentUser = mockk&lt;UserAccount&gt;()
+  ... (еще 21 строк)
 
                                     </div>
                                 </details>
@@ -1257,71 +1267,71 @@
                                 <summary>Детальная информация</summary>
                                 <div class="details-content">
                                     ID требования: REQ-EXERCISE-01
-                                    Время анализа: 2026-01-28T18:13:19.714974600
+                                    Время анализа: 2026-01-29T10:45:05.393220600
                                     Количество соответствий: 10
-                                    Максимальное сходство: 0.445829
-                                    Среднее сходство: 0.4148507446050644
+                                    Максимальное сходство: 0.40206376
+                                    Среднее сходство: 0.3835402250289917
                                     
                                     ТЕСТЫ:
                                     ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-Сходство: 0.445829
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.40206376
 Уверенность: MEDIUM
-Метрики: {className=, line=264, fileSize=11339}
+Метрики: {className=, line=340, fileSize=15932}
 
 ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-Сходство: 0.43454552
-Уверенность: MEDIUM
-Метрики: {className=, line=114, fileSize=11339}
-
-====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-Сходство: 0.41913626
-Уверенность: MEDIUM
-Метрики: {className=, line=69, fileSize=4343}
-
-====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-Сходство: 0.41806087
-Уверенность: MEDIUM
-Метрики: {className=, line=157, fileSize=11339}
-
-====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-Сходство: 0.41542324
-Уверенность: MEDIUM
-Метрики: {className=, line=50, fileSize=4343}
-
-====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-Сходство: 0.41359842
-Уверенность: MEDIUM
-Метрики: {className=, line=188, fileSize=11339}
-
-====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-Сходство: 0.41140658
-Уверенность: MEDIUM
-Метрики: {className=, line=109, fileSize=4343}
-
-====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\RememberLastVisitFilterTest.kt
-Сходство: 0.40544015
-Уверенность: MEDIUM
-Метрики: {className=, line=74, fileSize=2658}
-
-====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\RememberLastVisitFilterTest.kt
-Сходство: 0.39346093
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.3911307
 Уверенность: LOW
-Метрики: {className=, line=56, fileSize=2658}
+Метрики: {className=, line=269, fileSize=15932}
 
 ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-Сходство: 0.39160648
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.38667247
 Уверенность: LOW
-Метрики: {className=, line=81, fileSize=4343}
+Метрики: {className=, line=243, fileSize=15932}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.38425127
+Уверенность: LOW
+Метрики: {className=, line=217, fileSize=15932}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.38347805
+Уверенность: LOW
+Метрики: {className=, line=143, fileSize=15932}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.38293177
+Уверенность: LOW
+Метрики: {className=, line=195, fileSize=15932}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.3826138
+Уверенность: LOW
+Метрики: {className=, line=315, fileSize=15932}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.38223845
+Уверенность: LOW
+Метрики: {className=, line=294, fileSize=15932}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.38019854
+Уверенность: LOW
+Метрики: {className=, line=168, fileSize=15932}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesPhrases\SeriesPhrasesRecordProcessorTest.kt
+Сходство: 0.35982347
+Уверенность: LOW
+Метрики: {className=, line=76, fileSize=5225}
                                 </div>
                             </details>
                         </div>
@@ -1334,10 +1344,10 @@
         </div>
         <div>
             <span class="coverage-badge coverage-low">
-                22.3%
+                24.6%
             </span>
-            <span class="confidence-badge confidence-low">
-                Low
+            <span class="confidence-badge confidence-medium">
+                Medium
             </span>
         </div>
     </div>
@@ -1345,73 +1355,100 @@
     <div class="requirement-description">
         Система отображает статистику тренировок пользователя (количество выполненных упражнений, прогресс по сериям, время тренировок) в личном кабинете. Доступны графики и отчеты по периодам.
     </div>
-<div class="ai-analysis-section">
-    <h3>AI Analysis</h3>
-    
-    <div class="ai-explanation">
-        <strong>Общий вывод:</strong> Текстовый анализ (структурированный ответ не найден)
-    </div>
-    
-    <div class="ai-analysis-grid">
-        <div class="ai-aspect-card">
-            <h4>Покрытые аспекты</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-        
-        <div class="ai-aspect-card">
-            <h4>Непокрытые аспекты</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-        
-        <div class="ai-aspect-card">
-            <h4>Рекомендации</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-    </div>
-    
-    <details>
-        <summary>Полный AI анализ</summary>
-        <div class="details-content">
-            Error analyzing with OpenAI: OpenAI API error: 429 - 
-        </div>
-    </details>
-</div>
+                        <div class="ai-analysis-section">
+                            <h3>AI Analysis</h3>
+                            
+                            <div class="ai-explanation">
+                                <strong>Общий вывод:</strong> Анализируемые тесты частично покрывают бизнес-требование. В тестах проверяется отображение статистики за день, прогресс пользователя и время тренировок. Однако, не увидено явной проверки на количество выполненных упражнений и прогресс по сериям, что является ключевым аспектом требования. Также, не обнаружены тесты, проверяющие доступность графиков и отчетов, что критично для полного покрытия требования. Отсутствует проверка на отображение статистики за произвольные периоды времени, что ограничивает понимание полноты реализации функционала.
+                            </div>
+                            
+                            <div class="ai-analysis-grid">
+                                <div class="ai-aspect-card">
+                                    <h4>Покрытые аспекты</h4>
+                                    <ul class="ai-aspect-list">
+    <li>отображение статистики тренировок пользователя за день</li><li>отображение прогресса пользователя по периодам</li><li>время тренировок</li>
+</ul>
+                                </div>
+                                
+                                <div class="ai-aspect-card">
+                                    <h4>Непокрытые аспекты</h4>
+                                    <ul class="ai-aspect-list">
+    <li>количество выполненных упражнений</li><li>прогресс по сериям</li><li>доступность графиков и отчетов</li><li>отображение статистики за произвольные периоды времени</li>
+</ul>
+                                </div>
+                                
+                                <div class="ai-aspect-card">
+                                    <h4>Рекомендации</h4>
+                                    <ul class="ai-aspect-list">
+    <li>Добавить тесты, проверяющие количество выполненных упражнений и прогресс по сериям.</li><li>Проверить доступность и корректность отображения графиков и отчетов.</li><li>Реализовать тесты на отображение статистики за произвольные периоды времени.</li>
+</ul>
+                                </div>
+                            </div>
+                            
+                            <details>
+                                <summary>Полный AI анализ</summary>
+                                <div class="details-content">
+                                    {
+  &quot;coverage_assessment&quot;: &quot;partial&quot;,
+  &quot;confidence&quot;: &quot;medium&quot;,
+  &quot;covered_aspects&quot;: [
+    &quot;отображение статистики тренировок пользователя за день&quot;,
+    &quot;отображение прогресса пользователя по периодам&quot;,
+    &quot;время тренировок&quot;
+  ],
+  &quot;missing_aspects&quot;: [
+    &quot;количество выполненных упражнений&quot;,
+    &quot;прогресс по сериям&quot;,
+    &quot;доступность графиков и отчетов&quot;,
+    &quot;отображение статистики за произвольные периоды времени&quot;
+  ],
+  &quot;explanation&quot;: &quot;Анализируемые тесты частично покрывают бизнес-требование. В тестах проверяется отображение статистики за день, прогресс пользователя и время тренировок. Однако, не увидено явной проверки на количество выполненных упражнений и прогресс по сериям, что является ключевым аспектом требования. Также, не обнаружены тесты, проверяющие доступность графиков и отчетов, что критично для полного покрытия требования. Отсутствует проверка на отображение статистики за произвольные периоды времени, что ограничивает понимание полноты реализации функционала.&quot;,
+  &quot;recommendations&quot;: [
+    &quot;Добавить тесты, проверяющие количество выполненных упражнений и прогресс по сериям.&quot;,
+    &quot;Проверить доступность и корректность отображения графиков и отчетов.&quot;,
+    &quot;Реализовать тесты на отображение статистики за произвольные периоды времени.&quot;
+  ]
+}
+                                </div>
+                            </details>
+                        </div>
 <div class="matches-section">
-    <h3>Найденные соответствия (3)</h3>
+    <h3>Найденные соответствия (10)</h3>
     <div class="matches-grid">
                             <div class="match-card">
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.320
+                                        0.378
                                         <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
                                             Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    FirebaseTokenAuthenticationFilterTest.kt
+                                    StudyHistoryServiceTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `should set authentication by NULL when user not exist in local DB and not returning from firebase DB`() {
+    fun `getDailyStatistics without user should return statistics for day for user from current session`() {
         // GIVEN
-        val requestMock = MockHttpServletRequest(HttpMethod.GE...
+        val userId = 1L
+        val exerciseDate = LocalDateTime.now...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-🎯 Сходство: 0.320
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\StudyHistoryServiceTest.kt
+🎯 Сходство: 0.378
 ---
 Код теста:
   @Test
-      fun `should set authentication by NULL when user not exist in local DB and not returning from firebase DB`() {
+      fun `getDailyStatistics without user should return statistics for day for user from current session`() {
           // GIVEN
-          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-          val tokenMock = &quot;firebaseTokenMock&quot;
-  ... (еще 39 строк)
+          val userId = 1L
+          val exerciseDate = LocalDateTime.now()
+  ... (еще 45 строк)
 
                                     </div>
                                 </details>
@@ -1420,36 +1457,36 @@
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.315
+                                        0.362
                                         <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
                                             Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    RoleServiceImplTest.kt
+                                    UserDayStatisticsServiceTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `should check users has not role`() {
+    fun `getStatisticsForPeriod should return statistics for a day`() {
         // GIVEN
-        val user = UserAccountDto(email = &quot;email&quot;, bornYear = 1111, name = &quot;name&quot;, gender = BrnGender.FEMALE)
-        user.roles = ...
+        val studyHistories = listOf(studyHistory)
+        every { studyHistory.startTime } returns studyH...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-🎯 Сходство: 0.315
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\UserDayStatisticsServiceTest.kt
+🎯 Сходство: 0.362
 ---
 Код теста:
   @Test
-      fun `should check users has not role`() {
+      fun `getStatisticsForPeriod should return statistics for a day`() {
           // GIVEN
-          val user = UserAccountDto(email = &quot;email&quot;, bornYear = 1111, name = &quot;name&quot;, gender = BrnGender.FEMALE)
-          user.roles = mutableSetOf(&quot;USER&quot;)
-  ... (еще 8 строк)
+          val studyHistories = listOf(studyHistory)
+          every { studyHistory.startTime } returns studyHistoryDate
+  ... (еще 25 строк)
 
                                     </div>
                                 </details>
@@ -1458,40 +1495,120 @@
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.304
+                                        0.360
                                         <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
                                             Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    RoleServiceImplTest.kt
+                                    WeekExercisingStatusRetrieverTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `should check users roles`() {
+    fun `getStatus should return GOOD status when user progress in the range of the status`() {
         // GIVEN
-        val user = UserAccountDto(email = &quot;email&quot;, bornYear = 1111, name = &quot;name&quot;, gender = BrnGender.FEMALE)
-        user.roles = mutable...
+        val period = listOf(studyHistory)
+        val userAccountId = 1L
+        ...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-🎯 Сходство: 0.304
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\WeekExercisingStatusRetrieverTest.kt
+🎯 Сходство: 0.360
 ---
 Код теста:
   @Test
-      fun `should check users roles`() {
+      fun `getStatus should return GOOD status when user progress in the range of the status`() {
           // GIVEN
-          val user = UserAccountDto(email = &quot;email&quot;, bornYear = 1111, name = &quot;name&quot;, gender = BrnGender.FEMALE)
-          user.roles = mutableSetOf(&quot;USER&quot;)
-  ... (еще 7 строк)
+          val period = listOf(studyHistory)
+          val userAccountId = 1L
+  ... (еще 21 строк)
 
                                     </div>
                                 </details>
                             </div>
+                            <div class="match-card">
+                                <div class="match-header">
+                                    <div class="match-name">test_method_61708530</div>
+                                    <div class="match-similarity">
+                                        0.359
+                                        <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+                                            Low
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="match-file">
+                                    DayExercisingStatusRetrieverTest.kt
+                                </div>
+                                <div class="match-snippet">
+                                    @Test
+    fun `getStatus should return GOOD status when user progress in the range of the status`() {
+        // GIVEN
+        every { requirementsManager.getPeriodRequirements(UserExercisingPeriod.DA...
+                                </div>
+                                <details style="margin-top: 10px;">
+                                    <summary>Доказательства</summary>
+                                    <div class="details-content">
+                                        📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\DayExercisingStatusRetrieverTest.kt
+🎯 Сходство: 0.359
+---
+Код теста:
+  @Test
+      fun `getStatus should return GOOD status when user progress in the range of the status`() {
+          // GIVEN
+          every { requirementsManager.getPeriodRequirements(UserExercisingPeriod.DAY) } returns requirementsStatuses
+          every { goodStudyHistory.executionSeconds } returns 10 * 60
+  ... (еще 10 строк)
+
+                                    </div>
+                                </details>
+                            </div>
+                            <div class="match-card">
+                                <div class="match-header">
+                                    <div class="match-name">test_method_61708530</div>
+                                    <div class="match-similarity">
+                                        0.359
+                                        <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+                                            Low
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="match-file">
+                                    WeekExercisingStatusRetrieverTest.kt
+                                </div>
+                                <div class="match-snippet">
+                                    @Test
+    fun `getStatus should return GREAT status when user progress in the range of the status`() {
+        // GIVEN
+        val period = listOf(studyHistory)
+        val userAccountId = 1L
+       ...
+                                </div>
+                                <details style="margin-top: 10px;">
+                                    <summary>Доказательства</summary>
+                                    <div class="details-content">
+                                        📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\WeekExercisingStatusRetrieverTest.kt
+🎯 Сходство: 0.359
+---
+Код теста:
+  @Test
+      fun `getStatus should return GREAT status when user progress in the range of the status`() {
+          // GIVEN
+          val period = listOf(studyHistory)
+          val userAccountId = 1L
+  ... (еще 21 строк)
+
+                                    </div>
+                                </details>
+                            </div>
+<div class="match-card" style="text-align: center; padding: 30px;">
+    <p>... и еще 5 соответствий</p>
+</div>
     </div>
 </div>
 <div class="gaps-section">
@@ -1505,29 +1622,71 @@
                                 <summary>Детальная информация</summary>
                                 <div class="details-content">
                                     ID требования: REQ-PROGRESS-01
-                                    Время анализа: 2026-01-28T18:13:20.067437900
-                                    Количество соответствий: 3
-                                    Максимальное сходство: 0.32042354
-                                    Среднее сходство: 0.3130659858385722
+                                    Время анализа: 2026-01-29T10:45:16.370428700
+                                    Количество соответствий: 10
+                                    Максимальное сходство: 0.37752798
+                                    Среднее сходство: 0.35876059234142305
                                     
                                     ТЕСТЫ:
                                     ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-Сходство: 0.32042354
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\StudyHistoryServiceTest.kt
+Сходство: 0.37752798
 Уверенность: LOW
-Метрики: {className=, line=264, fileSize=11339}
+Метрики: {className=, line=295, fileSize=16113}
 
 ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-Сходство: 0.31464428
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\UserDayStatisticsServiceTest.kt
+Сходство: 0.36182994
 Уверенность: LOW
-Метрики: {className=, line=148, fileSize=4343}
+Метрики: {className=, line=90, fileSize=3726}
 
 ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-Сходство: 0.30413014
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\WeekExercisingStatusRetrieverTest.kt
+Сходство: 0.36030403
 Уверенность: LOW
-Метрики: {className=, line=137, fileSize=4343}
+Метрики: {className=, line=105, fileSize=5014}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\DayExercisingStatusRetrieverTest.kt
+Сходство: 0.3594957
+Уверенность: LOW
+Метрики: {className=, line=85, fileSize=3932}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\WeekExercisingStatusRetrieverTest.kt
+Сходство: 0.35906
+Уверенность: LOW
+Метрики: {className=, line=80, fileSize=5014}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\StudyHistoryServiceTest.kt
+Сходство: 0.358486
+Уверенность: LOW
+Метрики: {className=, line=437, fileSize=16113}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\StudyHistoryServiceTest.kt
+Сходство: 0.3572342
+Уверенность: LOW
+Метрики: {className=, line=246, fileSize=16113}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\StudyHistoryServiceTest.kt
+Сходство: 0.3570634
+Уверенность: LOW
+Метрики: {className=, line=342, fileSize=16113}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\DayExercisingStatusRetrieverTest.kt
+Сходство: 0.3491538
+Уверенность: LOW
+Метрики: {className=, line=98, fileSize=3932}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\WeekExercisingStatusRetrieverTest.kt
+Сходство: 0.34745088
+Уверенность: LOW
+Метрики: {className=, line=130, fileSize=5014}
                                 </div>
                             </details>
                         </div>
@@ -1540,10 +1699,10 @@
         </div>
         <div>
             <span class="coverage-badge coverage-low">
-                23.8%
+                23.3%
             </span>
-            <span class="confidence-badge confidence-low">
-                Low
+            <span class="confidence-badge confidence-medium">
+                Medium
             </span>
         </div>
     </div>
@@ -1551,75 +1710,93 @@
     <div class="requirement-description">
         Специалист/администратор может управлять упражнениями через админ-панель: создавать/редактировать/удалять упражнения, загружать аудио-файлы, настраивать серии упражнений.
     </div>
-<div class="ai-analysis-section">
-    <h3>AI Analysis</h3>
-    
-    <div class="ai-explanation">
-        <strong>Общий вывод:</strong> Текстовый анализ (структурированный ответ не найден)
-    </div>
-    
-    <div class="ai-analysis-grid">
-        <div class="ai-aspect-card">
-            <h4>Покрытые аспекты</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-        
-        <div class="ai-aspect-card">
-            <h4>Непокрытые аспекты</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-        
-        <div class="ai-aspect-card">
-            <h4>Рекомендации</h4>
-            <p style='opacity: 0.8;'>Нет данных</p>
-        </div>
-    </div>
-    
-    <details>
-        <summary>Полный AI анализ</summary>
-        <div class="details-content">
-            Error analyzing with OpenAI: OpenAI API error: 429 - 
-        </div>
-    </details>
-</div>
+                        <div class="ai-analysis-section">
+                            <h3>AI Analysis</h3>
+                            
+                            <div class="ai-explanation">
+                                <strong>Общий вывод:</strong> Из предоставленных фрагментов кода тестов видно, что они частично покрывают бизнес-требование 'Content Management by Specialists'. В первом тесте (BaseTest) представлена логика удаления упражнений после тестирования, что соответствует части требования о возможности удалять упражнения. Второй тест (SeriesMatrixRecordProcessorTest) касается создания упражнений, что также является частью требования. Однако, в представленных фрагментах нет информации о тестировании функциональности редактирования упражнений, загрузки аудио-файлов и настройки серий упражнений, что указывает на частичное покрытие требования.
+                            </div>
+                            
+                            <div class="ai-analysis-grid">
+                                <div class="ai-aspect-card">
+                                    <h4>Покрытые аспекты</h4>
+                                    <ul class="ai-aspect-list">
+    <li>удаление упражнений</li><li>создание упражнений</li>
+</ul>
+                                </div>
+                                
+                                <div class="ai-aspect-card">
+                                    <h4>Непокрытые аспекты</h4>
+                                    <ul class="ai-aspect-list">
+    <li>редактирование упражнений</li><li>загрузка аудио-файлов</li><li>настройка серии упражнений</li>
+</ul>
+                                </div>
+                                
+                                <div class="ai-aspect-card">
+                                    <h4>Рекомендации</h4>
+                                    <ul class="ai-aspect-list">
+    <li>Добавить тесты для проверки функциональности редактирования упражнений.</li><li>Добавить тесты для проверки возможности загрузки аудио-файлов.</li><li>Добавить тесты для проверки настройки серий упражнений.</li>
+</ul>
+                                </div>
+                            </div>
+                            
+                            <details>
+                                <summary>Полный AI анализ</summary>
+                                <div class="details-content">
+                                    {
+  &quot;coverage_assessment&quot;: &quot;partial&quot;,
+  &quot;confidence&quot;: &quot;medium&quot;,
+  &quot;covered_aspects&quot;: [&quot;удаление упражнений&quot;, &quot;создание упражнений&quot;],
+  &quot;missing_aspects&quot;: [&quot;редактирование упражнений&quot;, &quot;загрузка аудио-файлов&quot;, &quot;настройка серии упражнений&quot;],
+  &quot;explanation&quot;: &quot;Из предоставленных фрагментов кода тестов видно, что они частично покрывают бизнес-требование &#39;Content Management by Specialists&#39;. В первом тесте (BaseTest) представлена логика удаления упражнений после тестирования, что соответствует части требования о возможности удалять упражнения. Второй тест (SeriesMatrixRecordProcessorTest) касается создания упражнений, что также является частью требования. Однако, в представленных фрагментах нет информации о тестировании функциональности редактирования упражнений, загрузки аудио-файлов и настройки серий упражнений, что указывает на частичное покрытие требования.&quot;,
+  &quot;recommendations&quot;: [
+    &quot;Добавить тесты для проверки функциональности редактирования упражнений.&quot;,
+    &quot;Добавить тесты для проверки возможности загрузки аудио-файлов.&quot;,
+    &quot;Добавить тесты для проверки настройки серий упражнений.&quot;
+  ]
+}
+                                </div>
+                            </details>
+                        </div>
 <div class="matches-section">
-    <h3>Найденные соответствия (5)</h3>
+    <h3>Найденные соответствия (10)</h3>
     <div class="matches-grid">
                             <div class="match-card">
                                 <div class="match-header">
-                                    <div class="match-name">test_method_61708530</div>
+                                    <div class="match-name">test_method_813420381</div>
                                     <div class="match-similarity">
-                                        0.357
+                                        0.346
                                         <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
                                             Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    RememberLastVisitFilterTest.kt
+                                    BaseTest.kt
                                 </div>
                                 <div class="match-snippet">
-                                    @Test
-    fun `should mark visit for current user`() {
-        // GIVEN
-        val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-        val tokenMock = &quot;firebaseTokenMock&quot;
-     ...
+                                    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+abstract class BaseTest {
+    @Autowired
+    lateinit var exerciseGroupRepository: ExerciseGroupRepository
+
+    @Autowired
+    lateinit var resourceRepo...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
-                                        📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\RememberLastVisitFilterTest.kt
-🎯 Сходство: 0.357
+                                        📝 Тест: test_method_813420381
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\integration\repo\BaseTest.kt
+🎯 Сходство: 0.346
 ---
 Код теста:
-  @Test
-      fun `should mark visit for current user`() {
-          // GIVEN
-          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-          val tokenMock = &quot;firebaseTokenMock&quot;
-  ... (еще 15 строк)
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  abstract class BaseTest {
+      @Autowired
+      lateinit var exerciseGroupRepository: ExerciseGroupRepository
+  
+  ... (еще 52 строк)
 
                                     </div>
                                 </details>
@@ -1628,36 +1805,37 @@
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.350
+                                        0.343
                                         <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
                                             Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    RememberLastVisitFilterTest.kt
+                                    SeriesMatrixRecordProcessorTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `should not mark visit when request is anonymous`() {
+    fun `should create correct answer options`() {
         // GIVEN
-        val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-        val tokenMock = &quot;firebaseTok...
+        val exercise = createExercise()
+        every { exerciseRepositoryMock.save(exercise) } returns exercise
+        val e...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\RememberLastVisitFilterTest.kt
-🎯 Сходство: 0.350
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesMatrix\SeriesMatrixRecordProcessorTest.kt
+🎯 Сходство: 0.343
 ---
 Код теста:
   @Test
-      fun `should not mark visit when request is anonymous`() {
+      fun `should create correct answer options`() {
           // GIVEN
-          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-          val tokenMock = &quot;firebaseTokenMock&quot;
-  ... (еще 15 строк)
+          val exercise = createExercise()
+          every { exerciseRepositoryMock.save(exercise) } returns exercise
+  ... (еще 58 строк)
 
                                     </div>
                                 </details>
@@ -1666,37 +1844,36 @@
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.337
+                                        0.342
                                         <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
                                             Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    ExceptionControllerAdviceTest.kt
+                                    ExerciseServiceTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `should handle FileFormatException`() {
+    fun `should get 2 exercises with 2 available for user-admin`() {
         // GIVEN
-        val exception = FileFormatException()
-        // WHEN
-        val responseEntity = exceptionControllerAdvice.handleFileFo...
+        ReflectionTestUtils.setField(exerciseService, &quot;minRepetitionIndex&quot;, 0.8)
+        ReflectionTestUtils...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\advice\ExceptionControllerAdviceTest.kt
-🎯 Сходство: 0.337
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\ExerciseServiceTest.kt
+🎯 Сходство: 0.342
 ---
 Код теста:
   @Test
-      fun `should handle FileFormatException`() {
+      fun `should get 2 exercises with 2 available for user-admin`() {
           // GIVEN
-          val exception = FileFormatException()
-          // WHEN
-  ... (еще 12 строк)
+          ReflectionTestUtils.setField(exerciseService, &quot;minRepetitionIndex&quot;, 0.8)
+          ReflectionTestUtils.setField(exerciseService, &quot;minRightAnswersIndex&quot;, 0.8)
+  ... (еще 21 строк)
 
                                     </div>
                                 </details>
@@ -1705,35 +1882,36 @@
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.320
+                                        0.340
                                         <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
                                             Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    FirebaseTokenAuthenticationFilterTest.kt
+                                    SignalSeriesRecordProcessorTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `should set authentication by NULL when user not exist in local DB and not returning from firebase DB`() {
-        // GIVEN
-        val requestMock = MockHttpServletRequest(HttpMethod.GE...
+    fun `should create correct exercise`() {
+        val exercise = createExercise(subGroupDuration)
+        every { exerciseRepositoryMock.save(exercise) } returns exercise
+        every { exer...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-🎯 Сходство: 0.320
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\nonspeech\SignalSeriesRecordProcessorTest.kt
+🎯 Сходство: 0.340
 ---
 Код теста:
   @Test
-      fun `should set authentication by NULL when user not exist in local DB and not returning from firebase DB`() {
-          // GIVEN
-          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
-          val tokenMock = &quot;firebaseTokenMock&quot;
-  ... (еще 39 строк)
+      fun `should create correct exercise`() {
+          val exercise = createExercise(subGroupDuration)
+          every { exerciseRepositoryMock.save(exercise) } returns exercise
+          every { exerciseRepositoryMock.findByNameAndLevel(&quot;По 2 сигнала разной длительности.&quot;, 1) } returns null
+  ... (еще 20 строк)
 
                                     </div>
                                 </details>
@@ -1742,44 +1920,46 @@
                                 <div class="match-header">
                                     <div class="match-name">test_method_61708530</div>
                                     <div class="match-similarity">
-                                        0.305
+                                        0.339
                                         <span class="confidence-low confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
                                             Low
                                         </span>
                                     </div>
                                 </div>
                                 <div class="match-file">
-                                    RoleServiceImplTest.kt
+                                    SeriesWordsRecordProcessorTest.kt
                                 </div>
                                 <div class="match-snippet">
                                     @Test
-    fun `findById should get role with roleId`() {
-        // GIVEN
-        val roleIdLong = 1L
-        val role =
-            Role(
-                id = 1L,
-                name = &quot;FirstName&quot;,
-...
+    fun `should create correct answer options`() {
+        val expected =
+            setOf(
+                resource_бал(),
+                resource_бум(),
+                resource_быль(),
+    ...
                                 </div>
                                 <details style="margin-top: 10px;">
                                     <summary>Доказательства</summary>
                                     <div class="details-content">
                                         📝 Тест: test_method_61708530
-📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-🎯 Сходство: 0.305
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesWords\SeriesWordsRecordProcessorTest.kt
+🎯 Сходство: 0.339
 ---
 Код теста:
   @Test
-      fun `findById should get role with roleId`() {
-          // GIVEN
-          val roleIdLong = 1L
-          val role =
-  ... (еще 15 строк)
+      fun `should create correct answer options`() {
+          val expected =
+              setOf(
+                  resource_бал(),
+  ... (еще 53 строк)
 
                                     </div>
                                 </details>
                             </div>
+<div class="match-card" style="text-align: center; padding: 30px;">
+    <p>... и еще 5 соответствий</p>
+</div>
     </div>
 </div>
 <div class="gaps-section">
@@ -1793,41 +1973,71 @@
                                 <summary>Детальная информация</summary>
                                 <div class="details-content">
                                     ID требования: REQ-ADMIN-01
-                                    Время анализа: 2026-01-28T18:13:20.375975300
-                                    Количество соответствий: 5
-                                    Максимальное сходство: 0.35737145
-                                    Среднее сходство: 0.33377997279167176
+                                    Время анализа: 2026-01-29T10:45:25.592282100
+                                    Количество соответствий: 10
+                                    Максимальное сходство: 0.34579954
+                                    Среднее сходство: 0.335499769449234
                                     
                                     ТЕСТЫ:
-                                    ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\RememberLastVisitFilterTest.kt
-Сходство: 0.35737145
+                                    ====== ТЕСТ: test_method_813420381 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\integration\repo\BaseTest.kt
+Сходство: 0.34579954
 Уверенность: LOW
-Метрики: {className=, line=56, fileSize=2658}
+Метрики: {className=, line=95, fileSize=3428}
 
 ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\RememberLastVisitFilterTest.kt
-Сходство: 0.35000905
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesMatrix\SeriesMatrixRecordProcessorTest.kt
+Сходство: 0.34269544
 Уверенность: LOW
-Метрики: {className=, line=74, fileSize=2658}
+Метрики: {className=, line=266, fileSize=9897}
 
 ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\advice\ExceptionControllerAdviceTest.kt
-Сходство: 0.33659452
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\ExerciseServiceTest.kt
+Сходство: 0.3418478
 Уверенность: LOW
-Метрики: {className=, line=167, fileSize=9323}
+Метрики: {className=, line=126, fileSize=32058}
 
 ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
-Сходство: 0.3200529
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\nonspeech\SignalSeriesRecordProcessorTest.kt
+Сходство: 0.33963373
 Уверенность: LOW
-Метрики: {className=, line=264, fileSize=11339}
+Метрики: {className=, line=102, fileSize=7652}
 
 ====== ТЕСТ: test_method_61708530 ======
-Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
-Сходство: 0.30487195
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesWords\SeriesWordsRecordProcessorTest.kt
+Сходство: 0.3389948
 Уверенность: LOW
-Метрики: {className=, line=50, fileSize=4343}
+Метрики: {className=, line=317, fileSize=11375}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesWordsKoroleva\SeriesWordsKorolevaRecordProcessorTest.kt
+Сходство: 0.33212414
+Уверенность: LOW
+Метрики: {className=, line=252, fileSize=12430}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesMatrix\SeriesMatrixRecordProcessorTest.kt
+Сходство: 0.33110145
+Уверенность: LOW
+Метрики: {className=, line=143, fileSize=9897}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\ExerciseServiceTest.kt
+Сходство: 0.33036938
+Уверенность: LOW
+Метрики: {className=, line=151, fileSize=32058}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesPhrases\SeriesPhrasesRecordProcessorTest.kt
+Сходство: 0.32761425
+Уверенность: LOW
+Метрики: {className=, line=76, fileSize=5225}
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\CsvUploadServiceTest.kt
+Сходство: 0.32481715
+Уверенность: LOW
+Метрики: {className=, line=57, fileSize=3168}
                                 </div>
                             </details>
                         </div>
