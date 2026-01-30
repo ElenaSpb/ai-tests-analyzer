@@ -75,8 +75,8 @@
 ```
 Возможные варианты вычисления эмбедингов: 
 1. локально примитивным хешированием слов в вектор
-2. с помощью сервиса от open-ai https://api.openai.com/v1/embedding (если передан во входных параметрах ключ)
-3. с помощью специализированной модели "codestral-embed" Mistral для кода и модели "mistral-embed" для текста
+2. с помощью сервиса от Open-ai https://api.openai.com/v1/embedding (если передан во входных параметрах ключ)
+3. с помощью сервиса от Mistral https://api.mistral.ai/v1/embedding специализированной модели "codestral-embed" Mistral для кода и модели "mistral-embed" для текста
 4. реализация с помощью других api в процессе
 
 Возможные варианты вычисления дополнительного анализа соответветсвия покрытия бизнес требованиям и генерация рекомендаций:
@@ -95,6 +95,7 @@ https://drive.google.com/file/d/1XLCVEQrJMkCq7h8VAEh_FtW_FakSQkzN/view?usp=drive
 вот полный отчет при платной подписке https://drive.google.com/file/d/1YlPw6qS73UP1GPXqSA8tJc1C5if0MolC/view?usp=drive_link
    (для удобства чтения его надо скачать себе и открыть - это html страница)
 
+все удачные отчеты, которые удалось сгенерить здесь https://drive.google.com/drive/folders/1a3_WSoPN2otLP5-gSS8vdVy2BzGvdQp5?usp=sharing
 ### Почему это жизнеспособно?
 1. **Практичность** - использует доступные AI-инструменты
 2. **Объяснимость** - не просто "чёрный ящик". 
