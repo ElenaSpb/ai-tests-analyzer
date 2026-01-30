@@ -1,6 +1,6 @@
 package com.semantic.coverage
 
-import com.semantic.coverage.analyze.CoverageOpenAiAnalyzer
+import com.semantic.coverage.analyze.CoverageAiAnalyzer
 import com.semantic.coverage.aiServices.AiService
 import com.semantic.coverage.aiServices.MistralService
 import com.semantic.coverage.aiServices.OllamaService
@@ -92,7 +92,7 @@ fun main(args: Array<String>) {
         // 3. Инициализация анализатора
         val localEmbeddingService = LocalEmbeddingService()
         val openAiEmbeddingService = OpenAIEmbeddingService(openaiKey)
-        val analyzer = CoverageOpenAiAnalyzer(
+        val analyzer = CoverageAiAnalyzer(
             embeddingService = localEmbeddingService,
             aiService = aiService,
             useAI = useAI && aiService != null

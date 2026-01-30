@@ -5,7 +5,7 @@ import com.semantic.coverage.dto.*
 import com.semantic.coverage.embedding.EmbeddingService
 import java.util.*
 
-class CoverageOpenAiAnalyzer(
+class CoverageAiAnalyzer(
     private val embeddingService: EmbeddingService,
     private val aiService: AiService? = null,
     private val useAI: Boolean = false,
