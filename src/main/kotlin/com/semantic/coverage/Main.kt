@@ -30,6 +30,7 @@ fun main(args: Array<String>) {
         shortName = "r",
         description = "Path to requirements file (JSON)"
     ).default("requirements.json")
+    //).default("requirement_one.json")
 
     val outputPath by parser.option(
         ArgType.String,
@@ -41,7 +42,7 @@ fun main(args: Array<String>) {
         ArgType.Int,
         shortName = "m",
         description = "Maximum number of test files to process"
-    ).default(118)
+    ).default(50)
 
     val useAI by parser.option(
         ArgType.Boolean,
