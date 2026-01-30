@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semantic Coverage Report - Brain-up/brn</title>
+<style>
+:root {
+--primary-color: #2c3e50;
+--secondary-color: #3498db;
+--success-color: #27ae60;
+--warning-color: #f39c12;
+--danger-color: #e74c3c;
+--info-color: #17a2b8;
+--light-bg: #f8f9fa;
+--dark-bg: #343a40;
+--border-color: #dee2e6;
+--criteria-bg: #e8f5e9;
+--tags-bg: #e3f2fd;
+}
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background-color: #f5f7fa;
+padding: 20px;
+}
+.container {
+max-width: 1400px;
+margin: 0 auto;
+}
+.header {
+background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+color: white;
+padding: 30px;
+border-radius: 10px;
+margin-bottom: 30px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.header h1 {
+font-size: 2.5rem;
+margin-bottom: 10px;
+}
+.header .subtitle {
+font-size: 1.1rem;
+opacity: 0.9;
+}
+.stats-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 20px;
+margin-bottom: 30px;
+}
+.stat-card {
+background: white;
+padding: 25px;
+border-radius: 8px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+text-align: center;
+transition: transform 0.2s;
+}
+.stat-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.stat-value {
+font-size: 2.5rem;
+font-weight: bold;
+margin-bottom: 5px;
+}
+.stat-label {
+color: #6c757d;
+font-size: 0.9rem;
+}
+.coverage-high { color: var(--success-color); }
+.coverage-medium { color: var(--warning-color); }
+.coverage-low { color: var(--danger-color); }
+.requirement-card {
+background: white;
+border-radius: 8px;
+padding: 25px;
+margin-bottom: 25px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+border-left: 5px solid var(--border-color);
+}
+.requirement-card.high-coverage {
+border-left-color: var(--success-color);
+}
+.requirement-card.medium-coverage {
+border-left-color: var(--warning-color);
+}
+.requirement-card.low-coverage {
+border-left-color: var(--danger-color);
+}
+.requirement-header {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+margin-bottom: 20px;
+flex-wrap: wrap;
+gap: 15px;
+}
+.requirement-title {
+flex: 1;
+min-width: 300px;
+}
+.requirement-title h2 {
+color: var(--primary-color);
+margin-bottom: 5px;
+font-size: 1.5rem;
+}
+.requirement-meta {
+display: flex;
+gap: 10px;
+margin-bottom: 10px;
+flex-wrap: wrap;
+}
+.requirement-id {
+display: inline-block;
+background: var(--light-bg);
+padding: 3px 10px;
+border-radius: 4px;
+font-size: 0.9rem;
+}
+.requirement-category {
+display: inline-block;
+background: #e9ecef;
+padding: 3px 8px;
+border-radius: 4px;
+font-size: 0.85rem;
+text-transform: capitalize;
+}
+.requirement-priority {
+display: inline-block;
+padding: 3px 8px;
+border-radius: 4px;
+font-size: 0.85rem;
+font-weight: bold;
+}
+.priority-high { background: #ffebee; color: #c62828; }
+.priority-medium { background: #fff8e1; color: #5d4037; }
+.priority-low { background: #e8f5e9; color: #2e7d32; }
+.coverage-badge {
+display: inline-flex;
+align-items: center;
+padding: 8px 16px;
+border-radius: 20px;
+font-weight: bold;
+font-size: 1.1rem;
+}
+.confidence-badge {
+display: inline-block;
+padding: 5px 12px;
+border-radius: 12px;
+font-size: 0.85rem;
+font-weight: 600;
+margin-left: 10px;
+}
+.confidence-high { background: #d4edda; color: #155724; }
+.confidence-medium { background: #fff3cd; color: #856404; }
+.confidence-low { background: #f8d7da; color: #721c24; }
+.requirement-description {
+background: var(--light-bg);
+padding: 15px;
+border-radius: 6px;
+margin: 15px 0;
+line-height: 1.7;
+}
+.criteria-section {
+background: var(--criteria-bg);
+padding: 15px;
+border-radius: 6px;
+margin: 15px 0;
+border-left: 4px solid var(--success-color);
+}
+.criteria-section h4 {
+color: #2e7d32;
+margin-bottom: 10px;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.criteria-section h4::before {
+content: "✅";
+}
+.criteria-list {
+list-style: none;
+padding-left: 0;
+}
+.criteria-list li {
+padding: 8px 0 8px 25px;
+position: relative;
+border-bottom: 1px dashed #c8e6c9;
+}
+.criteria-list li:last-child {
+border-bottom: none;
+}
+.criteria-list li::before {
+content: "✓";
+position: absolute;
+left: 0;
+color: var(--success-color);
+font-weight: bold;
+}
+.tags-section {
+background: var(--tags-bg);
+padding: 12px 15px;
+border-radius: 6px;
+margin: 15px 0;
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+}
+.tag {
+background: rgba(33, 150, 243, 0.15);
+color: #1565c0;
+padding: 4px 10px;
+border-radius: 12px;
+font-size: 0.85rem;
+}
+.matches-section {
+margin: 25px 0;
+}
+.matches-section h3 {
+color: var(--primary-color);
+margin-bottom: 15px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.matches-section h3::before {
+content: "🔍";
+}
+.matches-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+gap: 15px;
+}
+.match-card {
+background: white;
+border: 1px solid var(--border-color);
+border-radius: 6px;
+padding: 18px;
+transition: all 0.2s;
+}
+.match-card:hover {
+border-color: var(--secondary-color);
+box-shadow: 0 4px 8px rgba(52, 152, 219, 0.1);
+}
+.match-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 10px;
+}
+.match-name {
+font-weight: 600;
+color: var(--primary-color);
+font-size: 1.05rem;
+}
+.match-similarity {
+font-weight: bold;
+color: var(--secondary-color);
+}
+.match-file {
+color: #6c757d;
+font-size: 0.9rem;
+margin-bottom: 8px;
+font-family: 'Consolas', monospace;
+}
+.match-snippet {
+background: #f8f9fa;
+padding: 10px;
+border-radius: 4px;
+font-family: 'Consolas', monospace;
+font-size: 0.85rem;
+max-height: 150px;
+overflow-y: auto;
+margin-top: 10px;
+border-left: 3px solid var(--border-color);
+}
+.ai-analysis-section {
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+color: white;
+padding: 25px;
+border-radius: 8px;
+margin: 25px 0;
+}
+.ai-analysis-section h3 {
+display: flex;
+align-items: center;
+gap: 10px;
+margin-bottom: 20px;
+}
+.ai-analysis-section h3::before {
+content: "🤖";
+}
+.ai-analysis-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+gap: 20px;
+margin-top: 20px;
+}
+.ai-aspect-card {
+background: rgba(255, 255, 255, 0.1);
+padding: 20px;
+border-radius: 6px;
+backdrop-filter: blur(10px);
+}
+.ai-aspect-card h4 {
+margin-bottom: 15px;
+color: white;
+font-size: 1.1rem;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.ai-aspect-list {
+list-style: none;
+}
+.ai-aspect-list li {
+padding: 8px 0;
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+display: flex;
+align-items: center;
+}
+.ai-aspect-list li:last-child {
+border-bottom: none;
+}
+.ai-aspect-list li::before {
+content: "•";
+margin-right: 10px;
+font-size: 1.5rem;
+}
+.ai-explanation {
+background: rgba(255, 255, 255, 0.1);
+padding: 20px;
+border-radius: 6px;
+margin-top: 20px;
+line-height: 1.7;
+}
+.gaps-section {
+background: #fff8e1;
+padding: 20px;
+border-radius: 6px;
+margin: 20px 0;
+border-left: 4px solid var(--warning-color);
+}
+.gaps-section h3 {
+color: #856404;
+margin-bottom: 15px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.gaps-section h3::before {
+content: "⚠️";
+}
+.gaps-list {
+list-style: none;
+}
+.gaps-list li {
+padding: 10px 0;
+border-bottom: 1px solid rgba(133, 100, 4, 0.1);
+display: flex;
+align-items: flex-start;
+gap: 10px;
+}
+.gaps-list li:last-child {
+border-bottom: none;
+}
+.gaps-list li::before {
+content: "🔸";
+flex-shrink: 0;
+}
+.details-section {
+margin: 20px 0;
+}
+details {
+background: white;
+border: 1px solid var(--border-color);
+border-radius: 6px;
+margin: 10px 0;
+overflow: hidden;
+}
+summary {
+padding: 15px;
+background: var(--light-bg);
+cursor: pointer;
+font-weight: 600;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+summary:hover {
+background: #e9ecef;
+}
+summary::after {
+content: "▶";
+transition: transform 0.3s;
+margin-left: 10px;
+}
+details[open] summary::after {
+transform: rotate(90deg);
+}
+.details-content {
+padding: 15px;
+border-top: 1px solid var(--border-color);
+max-height: 400px;
+overflow-y: auto;
+font-family: 'Consolas', monospace;
+font-size: 0.9rem;
+line-height: 1.5;
+white-space: pre-wrap;
+background: #f8f9fa;
+}
+.footer {
+text-align: center;
+margin-top: 50px;
+padding: 20px;
+color: #6c757d;
+font-size: 0.9rem;
+border-top: 1px solid var(--border-color);
+}
+@media (max-width: 768px) {
+.stats-grid {
+grid-template-columns: 1fr;
+}
+.matches-grid {
+grid-template-columns: 1fr;
+}
+.ai-analysis-grid {
+grid-template-columns: 1fr;
+}
+.requirement-header {
+flex-direction: column;
+align-items: stretch;
+}
+.requirement-title {
+min-width: auto;
+}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>🧠 Semantic Coverage Report</h1>
+<div class="subtitle">
+<p>Проект: Brain-up/brn | Сгенерировано: 2026-01-30 13:55:27</p>
+<p>AI-powered анализ покрытия тестами бизнес-требований с критериями приемки</p>
+</div>
+</div>
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-value">1</div>
+<div class="stat-label">Всего требований</div>
+</div>
+<div class="stat-card">
+<div class="stat-value coverage-high">51.9%</div>
+<div class="stat-label">Среднее покрытие</div>
+</div>
+<div class="stat-card">
+<div class="stat-value">0</div>
+<div class="stat-label">Высокая уверенность</div>
+</div>
+<div class="stat-card">
+<div class="stat-value coverage-low">0</div>
+<div class="stat-label">Низкое покрытие (<30%)</div>
+</div>
+<div class="stat-card">
+<div class="stat-value">1</div>
+<div class="stat-label">С критериями приемки</div>
+</div>
+<div class="stat-card">
+<div class="stat-value">1</div>
+<div class="stat-label">AI анализов</div>
+</div>
+</div>
+<div class="requirement-card medium-coverage">
+<div class="requirement-header">
+<div class="requirement-title">
+<div class="requirement-meta">
+<span class="requirement-id">REQ-AUTH-01</span>
+<span class="requirement-category">authentication</span>
+<span class="requirement-priority priority-high">HIGH</span>
+</div>
+<h2>1. Система регистрации и верификации пользователей</h2>
+</div>
+<div>
+<span class="coverage-badge coverage-medium">
+51.9%
+</span>
+<span class="confidence-badge confidence-low">
+Low
+</span>
+</div>
+</div>
+<div class="requirement-description">
+Пользователь может зарегистрироваться в системе, указав email и пароль, и подтвердив согласие с пользовательским соглашением. Система отправляет email подтверждения для верификации аккаунта. После верификации пользователь получает полный доступ к функционалу.
+</div>
+<div class="criteria-section">
+<h4>Критерии приемки (5)</h4>
+<ul class="criteria-list">
+<li>Пользователь вводит email, пароль и принимает соглашение</li><li>Система проверяет уникальность email</li><li>Отправляется email с ссылкой подтверждения</li><li>После подтверждения email аккаунт активируется</li><li>Пользователь может войти с подтвержденным аккаунтом</li>
+</ul>
+</div>
+<div class="tags-section">
+<span class="tag">registration</span><span class="tag">email-verification</span><span class="tag">onboarding</span>
+</div>
+<div class="ai-analysis-section">
+<h3>AI Analysis</h3>
+<div class="ai-explanation">
+<strong>Общий вывод:</strong> {
+  &quot;coverage_assessment&quot;: &quot;none&quot;,
+  &quot;confidence&quot;: &quot;low&quot;,
+  &quot;covered_aspects&quot;: [
+    &quot;интеграция с Firebase Authentication (проверка токена в `should set authentication when user exist in local DB` и `should set authentication when user not exist in ...
+</div>
+<div class="ai-analysis-grid">
+<div class="ai-aspect-card">
+<h4>✅ Покрытые аспекты</h4>
+<ul class="ai-aspect-list">
+<li>**Критические сценарии не покрыты**: Уникальность email, обработка ошибок (например, дублирующийся email), edge cases (пустые поля, невалидные данные).</li><li>**UI-логика игнорируется**: Нет тестов на фронтенд-валидацию (например, чекбокс согласия с пользовательским соглашением).</li><li>**Безопасность**: Отсутствуют тесты на уязвимости (например, инъекции в email или UID, brute-force атаки на токен верификации).</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>❌ Непокрытые аспекты</h4>
+<ul class="ai-aspect-list">
+<li>обработка ошибок и исключительных ситуаций</li><li>пограничные случаи (edge cases)</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>🎯 Рекомендации</h4>
+<ul class="ai-aspect-list">
+<li>добавить тесты на обработку ошибок</li><li>проверить покрытие edge cases</li><li>увеличить разнообразие тестовых данных</li>
+</ul>
+</div>
+</div>
+<details>
+<summary>Полный AI анализ (JSON)</summary>
+<div class="details-content">
+{
+  &quot;coverage_assessment&quot;: &quot;none&quot;,
+  &quot;confidence&quot;: &quot;low&quot;,
+  &quot;covered_aspects&quot;: [
+    &quot;интеграция с Firebase Authentication (проверка токена в `should set authentication when user exist in local DB` и `should set authentication when user not exist in local DB`)&quot;,
+    &quot;обработка случая отсутствия пользователя в локальной БД (метод `should set authentication by NULL when user not exist in local DB and not returning from firebase DB`)&quot;
+  ],
+  &quot;missing_aspects&quot;: [
+    &quot;регистрация пользователя с email/паролем (критерий 1 из REQ-AUTH-01)&quot;,
+    &quot;проверка уникальности email (критерий 2)&quot;,
+    &quot;отправка email подтверждения (критерий 3)&quot;,
+    &quot;верификация аккаунта по ссылке из email (критерий 4)&quot;,
+    &quot;вход пользователя после верификации (критерий 5)&quot;,
+    &quot;валидация формата email/пароля (например, минимальная длина пароля, корректный формат email)&quot;,
+    &quot;обработка edge cases: пустые поля, невалидный email, слабый пароль, истекший токен верификации&quot;,
+    &quot;проверка согласия с пользовательским соглашением (checkbox в UI)&quot;,
+    &quot;повторная отправка email подтверждения&quot;,
+    &quot;блокировка аккаунта после нескольких неудачных попыток верификации&quot;,
+    &quot;тесты на безопасность (например, SQL-инъекции в email или UID)&quot;
+  ],
+  &quot;covered_criteria&quot;: [
+    &quot;частичная интеграция с Firebase для аутентификации (но не для регистрации/верификации)&quot;
+  ],
+  &quot;missing_criteria&quot;: [
+    &quot;критерий 1: ввод email, пароля и принятие соглашения&quot;,
+    &quot;критерий 2: проверка уникальности email&quot;,
+    &quot;критерий 3: отправка email подтверждения&quot;,
+    &quot;критерий 4: активация аккаунта после подтверждения email&quot;,
+    &quot;критерий 5: вход с подтвержденным аккаунтом&quot;
+  ],
+  &quot;explanation&quot;: &quot;
+  Предоставленные тесты покрывают **только фильтр аутентификации через Firebase** (`FirebaseTokenAuthenticationFilterTest.kt`), но **не затрагивают функционал регистрации и верификации пользователей** (REQ-AUTH-01).
+  Ключевые проблемы:
+  1. **Отсутствие тестов на регистрацию**: Нет проверок API-эндпоинтов для `/register`, валидации полей или логики создания пользователя.
+  2. **Нет тестов на email-верификацию**: Не проверяется отправка email (например, через Mockito для `JavaMailSender` или аналога), генерация токена подтверждения, обработка клика по ссылке.
+  3. **Критические сценарии не покрыты**: Уникальность email, обработка ошибок (например, дублирующийся email), edge cases (пустые поля, невалидные данные).
+  4. **UI-логика игнорируется**: Нет тестов на фронтенд-валидацию (например, чекбокс согласия с пользовательским соглашением).
+  5. **Безопасность**: Отсутствуют тесты на уязвимости (например, инъекции в email или UID, brute-force атаки на токен верификации).
+
+  Текущие тесты проверяют **только аутентификацию через Firebase-токен**, но не функционал регистрации/верификации, описанный в требовании.
+  &quot;,
+  &quot;recommendations&quot;: [
+    {
+      &quot;action&quot;: &quot;написать интеграционные тесты для эндпоинта регистрации (`/register`)&quot;,
+      &quot;details&quot;: &quot;
+      - **Проверяемые аспекты**:
+        1. Валидация формата email (регулярное выражение) и пароля (длина, сложность).
+        2. Уникальность email (мокнуть репозиторий `UserRepository` для симуляции конфликта).
+        3. Сохранение пользователя в БД с статусом `UNVERIFIED`.
+        4. Генерация и отправка токена верификации (мокнуть `JavaMailSender` или аналог).
+      - **Инструменты**: `@SpringBootTest`, Mockito для мокинга зависимостей, TestContainers для БД.
+      - **Пример**:
+        ```kotlin
+        @Test
+        fun `should return 400 when email is invalid`() {
+            val request = RegisterRequest(email = \&quot;invalid\&quot;, password = \&quot;password123\&quot;, agreeTerms = true)
+            mockMvc.perform(post(\&quot;/register\&quot;)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(request)))
+                .andExpect(status().isBadRequest)
+                .andExpect(jsonPath(\&quot;$.error\&quot;).value(\&quot;Invalid email format\&quot;))
+        }
+</div>
+</details>
+</div>
+<div class="matches-section">
+<h3>Найденные соответствия (15)</h3>
+<div class="matches-grid">
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.588
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+FirebaseTokenAuthenticationFilterTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should set authentication when user not exist in local DB`() {
+        // GIVEN
+        val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
+        val tokenMock = &quot;f...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+🎯 Сходство: 0.588
+---
+Код теста:
+  @Test
+      fun `should set authentication when user not exist in local DB`() {
+          // GIVEN
+          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
+          val tokenMock = &quot;firebaseTokenMock&quot;
+  ... (еще 35 строк)
+🔑 Общие ключевые слова: email
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.587
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+FirebaseTokenAuthenticationFilterTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should set authentication when user exist in local DB`() {
+        // GIVEN
+        val request = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
+        val token = &quot;firebaseToken...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+🎯 Сходство: 0.587
+---
+Код теста:
+  @Test
+      fun `should set authentication when user exist in local DB`() {
+          // GIVEN
+          val request = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
+          val token = &quot;firebaseTokenMock&quot;
+  ... (еще 33 строк)
+🔑 Общие ключевые слова: email
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.567
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+FirebaseTokenAuthenticationFilterTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should set authentication by NULL when user not exist in local DB and not returning from firebase DB`() {
+        // GIVEN
+        val requestMock = MockHttpServletRequest(HttpMethod.GE...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+🎯 Сходство: 0.567
+---
+Код теста:
+  @Test
+      fun `should set authentication by NULL when user not exist in local DB and not returning from firebase DB`() {
+          // GIVEN
+          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
+          val tokenMock = &quot;firebaseTokenMock&quot;
+  ... (еще 39 строк)
+🔑 Общие ключевые слова: email
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.564
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+RoleServiceImplTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should check users roles`() {
+        // GIVEN
+        val user = UserAccountDto(email = &quot;email&quot;, bornYear = 1111, name = &quot;name&quot;, gender = BrnGender.FEMALE)
+        user.roles = mutable...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
+🎯 Сходство: 0.564
+---
+Код теста:
+  @Test
+      fun `should check users roles`() {
+          // GIVEN
+          val user = UserAccountDto(email = &quot;email&quot;, bornYear = 1111, name = &quot;name&quot;, gender = BrnGender.FEMALE)
+          user.roles = mutableSetOf(&quot;USER&quot;)
+  ... (еще 7 строк)
+🔑 Общие ключевые слова: email
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.553
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+RememberLastVisitFilterTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should mark visit for current user`() {
+        // GIVEN
+        val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
+        val tokenMock = &quot;firebaseTokenMock&quot;
+     ...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\RememberLastVisitFilterTest.kt
+🎯 Сходство: 0.553
+---
+Код теста:
+  @Test
+      fun `should mark visit for current user`() {
+          // GIVEN
+          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
+          val tokenMock = &quot;firebaseTokenMock&quot;
+  ... (еще 15 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card" style="text-align: center; padding: 30px; background: #f8f9fa;">
+<p>... и еще 10 соответствий</p>
+</div>
+</div>
+</div>
+<div class="gaps-section">
+<h3>Выявленные пробелы в покрытии (3)</h3>
+<ul class="gaps-list">
+<li>Не покрыты критерии приемки: Пользователь вводит email, пароль и принимает соглашение, Отправляется email с ссылкой подтверждения</li><li>Не найдены тесты для ключевых тегов: registration, email-verification, onboarding</li><li>Отсутствуют тесты с высокой степенью уверенности в покрытии</li>
+</ul>
+</div>
+<div class="details-section">
+<details>
+<summary>Детальная информация и метрики</summary>
+<div class="details-content">
+ID требования: REQ-AUTH-01
+Категория: authentication
+Приоритет: high
+Количество критериев приемки: 5
+Количество тегов: 3
+Время анализа: 2026-01-30T13:55:23.208704900
+---
+Статистика покрытия:
+• Количество соответствий: 15
+• Максимальное сходство: 0.588
+• Среднее сходство: 0.551
+• Уровень уверенности: LOW
+---
+ТЕСТЫ (15):
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+Сходство: 0.588
+Уверенность: MEDIUM
+Метаданные: className=, line=157, fileSize=11339
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+Сходство: 0.587
+Уверенность: MEDIUM
+Метаданные: className=, line=114, fileSize=11339
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+Сходство: 0.567
+Уверенность: MEDIUM
+Метаданные: className=, line=264, fileSize=11339
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
+Сходство: 0.564
+Уверенность: MEDIUM
+Метаданные: className=, line=137, fileSize=4343
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\RememberLastVisitFilterTest.kt
+Сходство: 0.553
+Уверенность: MEDIUM
+Метаданные: className=, line=56, fileSize=2658
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+Сходство: 0.549
+Уверенность: MEDIUM
+Метаданные: className=, line=214, fileSize=11339
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\DoctorControllerTest.kt
+Сходство: 0.547
+Уверенность: MEDIUM
+Метаданные: className=, line=90, fileSize=2887
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\RememberLastVisitFilterTest.kt
+Сходство: 0.546
+Уверенность: MEDIUM
+Метаданные: className=, line=74, fileSize=2658
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+Сходство: 0.542
+Уверенность: MEDIUM
+Метаданные: className=, line=188, fileSize=11339
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
+Сходство: 0.541
+Уверенность: MEDIUM
+Метаданные: className=, line=148, fileSize=4343
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
+Сходство: 0.538
+Уверенность: MEDIUM
+Метаданные: className=, line=109, fileSize=4343
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\DoctorControllerTest.kt
+Сходство: 0.538
+Уверенность: MEDIUM
+Метаданные: className=, line=40, fileSize=2887
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\DoctorControllerTest.kt
+Сходство: 0.538
+Уверенность: MEDIUM
+Метаданные: className=, line=61, fileSize=2887
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\CloudControllerTest.kt
+Сходство: 0.534
+Уверенность: MEDIUM
+Метаданные: className=, line=109, fileSize=4712
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\ContributorControllerTest.kt
+Сходство: 0.528
+Уверенность: MEDIUM
+Метаданные: className=, line=83, fileSize=3750
+</div>
+</details>
+</div>
+</div>
+<div class="footer">
+<p>Generated by Semantic Coverage System v2.0</p>
+<p>AI-powered test requirement traceability with acceptance criteria analysis</p>
+<p style="margin-top: 10px; font-size: 0.8rem;">
+Проект Brain-up/brn | https://brainup.site | https://github.com/Brain-up/brn
+</p>
+<p style="margin-top: 5px; font-size: 0.75rem; color: #adb5bd;">
+Отчет сгенерирован: 2026-01-30 13:55:27 | Требований: 1 | Среднее покрытие: 51.9%
+</p>
+</div>
+</div>
+</body>
+</html>

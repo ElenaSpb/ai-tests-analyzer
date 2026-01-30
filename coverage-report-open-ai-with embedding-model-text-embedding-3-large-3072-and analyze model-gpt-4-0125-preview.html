@@ -1,0 +1,2483 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semantic Coverage Report - Brain-up/brn</title>
+<style>
+:root {
+--primary-color: #2c3e50;
+--secondary-color: #3498db;
+--success-color: #27ae60;
+--warning-color: #f39c12;
+--danger-color: #e74c3c;
+--info-color: #17a2b8;
+--light-bg: #f8f9fa;
+--dark-bg: #343a40;
+--border-color: #dee2e6;
+--criteria-bg: #e8f5e9;
+--tags-bg: #e3f2fd;
+}
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: #333;
+background-color: #f5f7fa;
+padding: 20px;
+}
+.container {
+max-width: 1400px;
+margin: 0 auto;
+}
+.header {
+background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+color: white;
+padding: 30px;
+border-radius: 10px;
+margin-bottom: 30px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.header h1 {
+font-size: 2.5rem;
+margin-bottom: 10px;
+}
+.header .subtitle {
+font-size: 1.1rem;
+opacity: 0.9;
+}
+.stats-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 20px;
+margin-bottom: 30px;
+}
+.stat-card {
+background: white;
+padding: 25px;
+border-radius: 8px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+text-align: center;
+transition: transform 0.2s;
+}
+.stat-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.stat-value {
+font-size: 2.5rem;
+font-weight: bold;
+margin-bottom: 5px;
+}
+.stat-label {
+color: #6c757d;
+font-size: 0.9rem;
+}
+.coverage-high { color: var(--success-color); }
+.coverage-medium { color: var(--warning-color); }
+.coverage-low { color: var(--danger-color); }
+.requirement-card {
+background: white;
+border-radius: 8px;
+padding: 25px;
+margin-bottom: 25px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+border-left: 5px solid var(--border-color);
+}
+.requirement-card.high-coverage {
+border-left-color: var(--success-color);
+}
+.requirement-card.medium-coverage {
+border-left-color: var(--warning-color);
+}
+.requirement-card.low-coverage {
+border-left-color: var(--danger-color);
+}
+.requirement-header {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+margin-bottom: 20px;
+flex-wrap: wrap;
+gap: 15px;
+}
+.requirement-title {
+flex: 1;
+min-width: 300px;
+}
+.requirement-title h2 {
+color: var(--primary-color);
+margin-bottom: 5px;
+font-size: 1.5rem;
+}
+.requirement-meta {
+display: flex;
+gap: 10px;
+margin-bottom: 10px;
+flex-wrap: wrap;
+}
+.requirement-id {
+display: inline-block;
+background: var(--light-bg);
+padding: 3px 10px;
+border-radius: 4px;
+font-size: 0.9rem;
+}
+.requirement-category {
+display: inline-block;
+background: #e9ecef;
+padding: 3px 8px;
+border-radius: 4px;
+font-size: 0.85rem;
+text-transform: capitalize;
+}
+.requirement-priority {
+display: inline-block;
+padding: 3px 8px;
+border-radius: 4px;
+font-size: 0.85rem;
+font-weight: bold;
+}
+.priority-high { background: #ffebee; color: #c62828; }
+.priority-medium { background: #fff8e1; color: #5d4037; }
+.priority-low { background: #e8f5e9; color: #2e7d32; }
+.coverage-badge {
+display: inline-flex;
+align-items: center;
+padding: 8px 16px;
+border-radius: 20px;
+font-weight: bold;
+font-size: 1.1rem;
+}
+.confidence-badge {
+display: inline-block;
+padding: 5px 12px;
+border-radius: 12px;
+font-size: 0.85rem;
+font-weight: 600;
+margin-left: 10px;
+}
+.confidence-high { background: #d4edda; color: #155724; }
+.confidence-medium { background: #fff3cd; color: #856404; }
+.confidence-low { background: #f8d7da; color: #721c24; }
+.requirement-description {
+background: var(--light-bg);
+padding: 15px;
+border-radius: 6px;
+margin: 15px 0;
+line-height: 1.7;
+}
+.criteria-section {
+background: var(--criteria-bg);
+padding: 15px;
+border-radius: 6px;
+margin: 15px 0;
+border-left: 4px solid var(--success-color);
+}
+.criteria-section h4 {
+color: #2e7d32;
+margin-bottom: 10px;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.criteria-section h4::before {
+content: "✅";
+}
+.criteria-list {
+list-style: none;
+padding-left: 0;
+}
+.criteria-list li {
+padding: 8px 0 8px 25px;
+position: relative;
+border-bottom: 1px dashed #c8e6c9;
+}
+.criteria-list li:last-child {
+border-bottom: none;
+}
+.criteria-list li::before {
+content: "✓";
+position: absolute;
+left: 0;
+color: var(--success-color);
+font-weight: bold;
+}
+.tags-section {
+background: var(--tags-bg);
+padding: 12px 15px;
+border-radius: 6px;
+margin: 15px 0;
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+}
+.tag {
+background: rgba(33, 150, 243, 0.15);
+color: #1565c0;
+padding: 4px 10px;
+border-radius: 12px;
+font-size: 0.85rem;
+}
+.matches-section {
+margin: 25px 0;
+}
+.matches-section h3 {
+color: var(--primary-color);
+margin-bottom: 15px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.matches-section h3::before {
+content: "🔍";
+}
+.matches-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+gap: 15px;
+}
+.match-card {
+background: white;
+border: 1px solid var(--border-color);
+border-radius: 6px;
+padding: 18px;
+transition: all 0.2s;
+}
+.match-card:hover {
+border-color: var(--secondary-color);
+box-shadow: 0 4px 8px rgba(52, 152, 219, 0.1);
+}
+.match-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 10px;
+}
+.match-name {
+font-weight: 600;
+color: var(--primary-color);
+font-size: 1.05rem;
+}
+.match-similarity {
+font-weight: bold;
+color: var(--secondary-color);
+}
+.match-file {
+color: #6c757d;
+font-size: 0.9rem;
+margin-bottom: 8px;
+font-family: 'Consolas', monospace;
+}
+.match-snippet {
+background: #f8f9fa;
+padding: 10px;
+border-radius: 4px;
+font-family: 'Consolas', monospace;
+font-size: 0.85rem;
+max-height: 150px;
+overflow-y: auto;
+margin-top: 10px;
+border-left: 3px solid var(--border-color);
+}
+.ai-analysis-section {
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+color: white;
+padding: 25px;
+border-radius: 8px;
+margin: 25px 0;
+}
+.ai-analysis-section h3 {
+display: flex;
+align-items: center;
+gap: 10px;
+margin-bottom: 20px;
+}
+.ai-analysis-section h3::before {
+content: "🤖";
+}
+.ai-analysis-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+gap: 20px;
+margin-top: 20px;
+}
+.ai-aspect-card {
+background: rgba(255, 255, 255, 0.1);
+padding: 20px;
+border-radius: 6px;
+backdrop-filter: blur(10px);
+}
+.ai-aspect-card h4 {
+margin-bottom: 15px;
+color: white;
+font-size: 1.1rem;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.ai-aspect-list {
+list-style: none;
+}
+.ai-aspect-list li {
+padding: 8px 0;
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+display: flex;
+align-items: center;
+}
+.ai-aspect-list li:last-child {
+border-bottom: none;
+}
+.ai-aspect-list li::before {
+content: "•";
+margin-right: 10px;
+font-size: 1.5rem;
+}
+.ai-explanation {
+background: rgba(255, 255, 255, 0.1);
+padding: 20px;
+border-radius: 6px;
+margin-top: 20px;
+line-height: 1.7;
+}
+.gaps-section {
+background: #fff8e1;
+padding: 20px;
+border-radius: 6px;
+margin: 20px 0;
+border-left: 4px solid var(--warning-color);
+}
+.gaps-section h3 {
+color: #856404;
+margin-bottom: 15px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.gaps-section h3::before {
+content: "⚠️";
+}
+.gaps-list {
+list-style: none;
+}
+.gaps-list li {
+padding: 10px 0;
+border-bottom: 1px solid rgba(133, 100, 4, 0.1);
+display: flex;
+align-items: flex-start;
+gap: 10px;
+}
+.gaps-list li:last-child {
+border-bottom: none;
+}
+.gaps-list li::before {
+content: "🔸";
+flex-shrink: 0;
+}
+.details-section {
+margin: 20px 0;
+}
+details {
+background: white;
+border: 1px solid var(--border-color);
+border-radius: 6px;
+margin: 10px 0;
+overflow: hidden;
+}
+summary {
+padding: 15px;
+background: var(--light-bg);
+cursor: pointer;
+font-weight: 600;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+summary:hover {
+background: #e9ecef;
+}
+summary::after {
+content: "▶";
+transition: transform 0.3s;
+margin-left: 10px;
+}
+details[open] summary::after {
+transform: rotate(90deg);
+}
+.details-content {
+padding: 15px;
+border-top: 1px solid var(--border-color);
+max-height: 400px;
+overflow-y: auto;
+font-family: 'Consolas', monospace;
+font-size: 0.9rem;
+line-height: 1.5;
+white-space: pre-wrap;
+background: #f8f9fa;
+}
+.footer {
+text-align: center;
+margin-top: 50px;
+padding: 20px;
+color: #6c757d;
+font-size: 0.9rem;
+border-top: 1px solid var(--border-color);
+}
+@media (max-width: 768px) {
+.stats-grid {
+grid-template-columns: 1fr;
+}
+.matches-grid {
+grid-template-columns: 1fr;
+}
+.ai-analysis-grid {
+grid-template-columns: 1fr;
+}
+.requirement-header {
+flex-direction: column;
+align-items: stretch;
+}
+.requirement-title {
+min-width: auto;
+}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>🧠 Semantic Coverage Report</h1>
+<div class="subtitle">
+<p>Проект: Brain-up/brn | Сгенерировано: 2026-01-30 15:38:42</p>
+<p>AI-powered анализ покрытия тестами бизнес-требований с критериями приемки</p>
+</div>
+</div>
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-value">5</div>
+<div class="stat-label">Всего требований</div>
+</div>
+<div class="stat-card">
+<div class="stat-value coverage-high">45.5%</div>
+<div class="stat-label">Среднее покрытие</div>
+</div>
+<div class="stat-card">
+<div class="stat-value">0</div>
+<div class="stat-label">Высокая уверенность</div>
+</div>
+<div class="stat-card">
+<div class="stat-value coverage-low">0</div>
+<div class="stat-label">Низкое покрытие (<30%)</div>
+</div>
+<div class="stat-card">
+<div class="stat-value">5</div>
+<div class="stat-label">С критериями приемки</div>
+</div>
+<div class="stat-card">
+<div class="stat-value">5</div>
+<div class="stat-label">AI анализов</div>
+</div>
+</div>
+<div class="requirement-card medium-coverage">
+<div class="requirement-header">
+<div class="requirement-title">
+<div class="requirement-meta">
+<span class="requirement-id">REQ-AUTH-01</span>
+<span class="requirement-category">authentication</span>
+<span class="requirement-priority priority-high">HIGH</span>
+</div>
+<h2>1. Система регистрации и верификации пользователей</h2>
+</div>
+<div>
+<span class="coverage-badge coverage-medium">
+46.1%
+</span>
+<span class="confidence-badge confidence-medium">
+Medium
+</span>
+</div>
+</div>
+<div class="requirement-description">
+Пользователь может зарегистрироваться в системе, указав email и пароль, и подтвердив согласие с пользовательским соглашением. Система отправляет email подтверждения для верификации аккаунта. После верификации пользователь получает полный доступ к функционалу.
+</div>
+<div class="criteria-section">
+<h4>Критерии приемки (5)</h4>
+<ul class="criteria-list">
+<li>Пользователь вводит email, пароль и принимает соглашение</li><li>Система проверяет уникальность email</li><li>Отправляется email с ссылкой подтверждения</li><li>После подтверждения email аккаунт активируется</li><li>Пользователь может войти с подтвержденным аккаунтом</li>
+</ul>
+</div>
+<div class="tags-section">
+<span class="tag">registration</span><span class="tag">email-verification</span><span class="tag">onboarding</span>
+</div>
+<div class="ai-analysis-section">
+<h3>AI Analysis</h3>
+<div class="ai-explanation">
+<strong>Общий вывод:</strong> Тесты покрывают создание и поиск пользователя, но не проверяют процесс верификации
+</div>
+<div class="ai-analysis-grid">
+<div class="ai-aspect-card">
+<h4>✅ Покрытые аспекты</h4>
+<ul class="ai-aspect-list">
+<li>поиск пользователя по email</li><li>создание нового пользователя</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>❌ Непокрытые аспекты</h4>
+<ul class="ai-aspect-list">
+<li>проверка уникальности email</li><li>отправка email с подтверждением</li><li>активация аккаунта после подтверждения</li><li>вход с подтвержденным аккаунтом</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>🎯 Рекомендации</h4>
+<ul class="ai-aspect-list">
+<li>Добавить тесты на проверку отправки и подтверждения email</li><li>Добавить тесты на вход в систему с подтвержденным аккаунтом</li>
+</ul>
+</div>
+</div>
+<div class="ai-analysis-grid" style="margin-top: 15px;">
+<div class="ai-aspect-card">
+<h4>✅ Покрытые критерии</h4>
+<ul class="ai-aspect-list">
+<li>Пользователь вводит email, пароль и принимает соглашение</li><li>Система проверяет уникальность email</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>❌ Непокрытые критерии</h4>
+<ul class="ai-aspect-list">
+<li>Отправляется email с ссылкой подтверждения</li><li>После подтверждения email аккаунт активируется</li><li>Пользователь может войти с подтвержденным аккаунтом</li>
+</ul>
+</div>
+</div>
+<details>
+<summary>Полный AI анализ (JSON)</summary>
+<div class="details-content">
+{ &quot;coverage_assessment&quot;: &quot;partial&quot;, &quot;confidence&quot;: &quot;medium&quot;, &quot;covered_aspects&quot;: [&quot;поиск пользователя по email&quot;, &quot;создание нового пользователя&quot;], &quot;missing_aspects&quot;: [&quot;проверка уникальности email&quot;, &quot;отправка email с подтверждением&quot;, &quot;активация аккаунта после подтверждения&quot;, &quot;вход с подтвержденным аккаунтом&quot;], &quot;covered_criteria&quot;: [&quot;Пользователь вводит email, пароль и принимает соглашение&quot;, &quot;Система проверяет уникальность email&quot;], &quot;missing_criteria&quot;: [&quot;Отправляется email с ссылкой подтверждения&quot;, &quot;По
+</div>
+</details>
+</div>
+<div class="matches-section">
+<h3>Найденные соответствия (15)</h3>
+<div class="matches-grid">
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.443
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserAccountServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+        fun `should find a user by email`() {
+            // GIVEN
+            val email = &quot;email&quot;
+            every { userAccount.toDto() } returns userAccountDto
+            every { userAccoun...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+🎯 Сходство: 0.443
+---
+Код теста:
+  @Test
+          fun `should find a user by email`() {
+              // GIVEN
+              val email = &quot;email&quot;
+              every { userAccount.toDto() } returns userAccountDto
+  ... (еще 9 строк)
+🔑 Общие ключевые слова: email
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.418
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserAccountServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+        fun `should create new user`() {
+            // GIVEN
+            val userName = &quot;Tested&quot;
+            val uid = &quot;UID&quot;
+            val email = &quot;test@gmail.com&quot;
+            every { roleSer...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+🎯 Сходство: 0.418
+---
+Код теста:
+  @Test
+          fun `should create new user`() {
+              // GIVEN
+              val userName = &quot;Tested&quot;
+              val uid = &quot;UID&quot;
+  ... (еще 26 строк)
+🔑 Общие ключевые слова: email
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.405
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserAccountServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should delete auto test user by email`() {
+        // GIVEN
+        val usersCount = 1L
+        val email = &quot;autotest_n@1704819771.8820736.com&quot;
+        val prefix = &quot;autotest&quot;
+        R...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+🎯 Сходство: 0.405
+---
+Код теста:
+  @Test
+      fun `should delete auto test user by email`() {
+          // GIVEN
+          val usersCount = 1L
+          val email = &quot;autotest_n@1704819771.8820736.com&quot;
+  ... (еще 12 строк)
+🔑 Общие ключевые слова: email
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.381
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserDetailControllerTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `deleteAutoTestUserByEmail should return count of deleted users`() {
+        // GIVEN
+        val email = &quot;autotest_n@170472339.1784415.com&quot;
+        val usersCount = 1L
+        every { u...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\UserDetailControllerTest.kt
+🎯 Сходство: 0.381
+---
+Код теста:
+  @Test
+      fun `deleteAutoTestUserByEmail should return count of deleted users`() {
+          // GIVEN
+          val email = &quot;autotest_n@170472339.1784415.com&quot;
+          val usersCount = 1L
+  ... (еще 13 строк)
+🔑 Общие ключевые слова: email
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.378
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserAccountServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+        fun `should throw EntityNotFoundException while get user by email`() {
+            // GIVEN
+            val email = &quot;email&quot;
+            every { userAccountRepository.findUserAccountByEma...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+🎯 Сходство: 0.378
+---
+Код теста:
+  @Test
+          fun `should throw EntityNotFoundException while get user by email`() {
+              // GIVEN
+              val email = &quot;email&quot;
+              every { userAccountRepository.findUserAccountByEmail(email) } returns Optional.empty()
+  ... (еще 5 строк)
+🔑 Общие ключевые слова: email
+
+</div>
+</details>
+</div>
+<div class="match-card" style="text-align: center; padding: 30px; background: #f8f9fa;">
+<p>... и еще 10 соответствий</p>
+</div>
+</div>
+</div>
+<div class="gaps-section">
+<h3>Выявленные пробелы в покрытии (3)</h3>
+<ul class="gaps-list">
+<li>Не покрыты критерии приемки: Пользователь вводит email, пароль и принимает соглашение, Система проверяет уникальность email, Отправляется email с ссылкой подтверждения и еще 2</li><li>Не найдены тесты для ключевых тегов: registration, email-verification, onboarding</li><li>Отсутствуют тесты с высокой степенью уверенности в покрытии</li>
+</ul>
+</div>
+<div class="details-section">
+<details>
+<summary>Детальная информация и метрики</summary>
+<div class="details-content">
+ID требования: REQ-AUTH-01
+Категория: authentication
+Приоритет: high
+Количество критериев приемки: 5
+Количество тегов: 3
+Время анализа: 2026-01-30T15:38:03.000091600
+---
+Статистика покрытия:
+• Количество соответствий: 15
+• Максимальное сходство: 0.443
+• Среднее сходство: 0.379
+• Уровень уверенности: MEDIUM
+---
+ТЕСТЫ (15):
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.443
+Уверенность: MEDIUM
+Метаданные: className=, line=117, fileSize=25334
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.418
+Уверенность: MEDIUM
+Метаданные: className=, line=197, fileSize=25334
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.405
+Уверенность: MEDIUM
+Метаданные: className=, line=541, fileSize=25334
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\UserDetailControllerTest.kt
+Сходство: 0.381
+Уверенность: MEDIUM
+Метаданные: className=, line=357, fileSize=13281
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.378
+Уверенность: MEDIUM
+Метаданные: className=, line=126, fileSize=25334
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+Сходство: 0.378
+Уверенность: MEDIUM
+Метаданные: className=, line=114, fileSize=11339
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+Сходство: 0.372
+Уверенность: MEDIUM
+Метаданные: className=, line=157, fileSize=11339
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.372
+Уверенность: MEDIUM
+Метаданные: className=, line=308, fileSize=25334
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
+Сходство: 0.366
+Уверенность: MEDIUM
+Метаданные: className=, line=137, fileSize=4343
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\UserDetailControllerTest.kt
+Сходство: 0.366
+Уверенность: MEDIUM
+Метаданные: className=, line=104, fileSize=13281
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\FirebaseUserServiceTest.kt
+Сходство: 0.366
+Уверенность: MEDIUM
+Метаданные: className=, line=39, fileSize=1140
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.365
+Уверенность: MEDIUM
+Метаданные: className=, line=257, fileSize=25334
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.364
+Уверенность: MEDIUM
+Метаданные: className=, line=331, fileSize=25334
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\UserDetailControllerTest.kt
+Сходство: 0.356
+Уверенность: MEDIUM
+Метаданные: className=, line=89, fileSize=13281
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.355
+Уверенность: MEDIUM
+Метаданные: className=, line=222, fileSize=25334
+</div>
+</details>
+</div>
+</div>
+<div class="requirement-card medium-coverage">
+<div class="requirement-header">
+<div class="requirement-title">
+<div class="requirement-meta">
+<span class="requirement-id">REQ-AUTH-02</span>
+<span class="requirement-category">authentication</span>
+<span class="requirement-priority priority-high">HIGH</span>
+</div>
+<h2>2. Управление сессиями и аутентификацией</h2>
+</div>
+<div>
+<span class="coverage-badge coverage-medium">
+46.3%
+</span>
+<span class="confidence-badge confidence-medium">
+Medium
+</span>
+</div>
+</div>
+<div class="requirement-description">
+Пользователь может войти в систему с помощью email и пароля. Система создает защищенную JWT-сессию и управляет её жизненным циклом. Пользователь может выйти из системы, что приводит к завершению сессии и инвалидации токена.
+</div>
+<div class="criteria-section">
+<h4>Критерии приемки (5)</h4>
+<ul class="criteria-list">
+<li>Вход с корректными email/паролем создает JWT-токен</li><li>Токен используется для авторизации последующих запросов</li><li>Сессия сохраняется на стороне клиента и сервера</li><li>Выход из системы инвалидирует токен</li><li>Токены имеют ограниченное время жизни и обновляются</li>
+</ul>
+</div>
+<div class="tags-section">
+<span class="tag">login</span><span class="tag">jwt</span><span class="tag">session-management</span><span class="tag">logout</span>
+</div>
+<div class="ai-analysis-section">
+<h3>AI Analysis</h3>
+<div class="ai-explanation">
+<strong>Общий вывод:</strong> Тесты покрывают создание и использование токена, но не проверяют его инвалидацию и обновление
+</div>
+<div class="ai-analysis-grid">
+<div class="ai-aspect-card">
+<h4>✅ Покрытые аспекты</h4>
+<ul class="ai-aspect-list">
+<li>Вход с корректными email/паролем</li><li>Сохранение сессии на стороне сервера</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>❌ Непокрытые аспекты</h4>
+<ul class="ai-aspect-list">
+<li>Инвалидация токена при выходе</li><li>Ограниченное время жизни токена</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>🎯 Рекомендации</h4>
+<ul class="ai-aspect-list">
+<li>Добавить тесты на инвалидацию токена</li><li>Проверить обновление токенов</li>
+</ul>
+</div>
+</div>
+<div class="ai-analysis-grid" style="margin-top: 15px;">
+<div class="ai-aspect-card">
+<h4>✅ Покрытые критерии</h4>
+<ul class="ai-aspect-list">
+<li>Создание JWT-токена</li><li>Использование токена для авторизации</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>❌ Непокрытые критерии</h4>
+<ul class="ai-aspect-list">
+<li>Обновление токенов</li>
+</ul>
+</div>
+</div>
+<details>
+<summary>Полный AI анализ (JSON)</summary>
+<div class="details-content">
+{ &quot;coverage_assessment&quot;: &quot;partial&quot;, &quot;confidence&quot;: &quot;medium&quot;, &quot;covered_aspects&quot;: [&quot;Вход с корректными email/паролем&quot;, &quot;Сохранение сессии на стороне сервера&quot;], &quot;missing_aspects&quot;: [&quot;Инвалидация токена при выходе&quot;, &quot;Ограниченное время жизни токена&quot;], &quot;covered_criteria&quot;: [&quot;Создание JWT-токена&quot;, &quot;Использование токена для авторизации&quot;], &quot;missing_criteria&quot;: [&quot;Обновление токенов&quot;], &quot;explanation&quot;: &quot;Тесты покрывают создание и использование токена, но не проверяют его инвалидацию и обновление&quot;, &quot;recommendati
+</div>
+</details>
+</div>
+<div class="matches-section">
+<h3>Найденные соответствия (15)</h3>
+<div class="matches-grid">
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.448
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+FirebaseTokenAuthenticationFilterTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should set authentication when user exist in local DB`() {
+        // GIVEN
+        val request = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
+        val token = &quot;firebaseToken...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+🎯 Сходство: 0.448
+---
+Код теста:
+  @Test
+      fun `should set authentication when user exist in local DB`() {
+          // GIVEN
+          val request = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
+          val token = &quot;firebaseTokenMock&quot;
+  ... (еще 33 строк)
+🔑 Общие ключевые слова: email
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.444
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserDetailControllerTest.kt
+</div>
+<div class="match-snippet">
+@Test
+        fun `should get logged in user from the current session`() {
+            // GIVEN
+            every { userAccountService.getCurrentUserDto() } returns userAccountDto
+
+            // WHEN...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\UserDetailControllerTest.kt
+🎯 Сходство: 0.444
+---
+Код теста:
+  @Test
+          fun `should get logged in user from the current session`() {
+              // GIVEN
+              every { userAccountService.getCurrentUserDto() } returns userAccountDto
+  
+  ... (еще 11 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.435
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+FirebaseTokenAuthenticationFilterTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should set authentication when user not exist in local DB`() {
+        // GIVEN
+        val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
+        val tokenMock = &quot;f...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+🎯 Сходство: 0.435
+---
+Код теста:
+  @Test
+      fun `should set authentication when user not exist in local DB`() {
+          // GIVEN
+          val requestMock = MockHttpServletRequest(HttpMethod.GET.name, &quot;/test&quot;)
+          val tokenMock = &quot;firebaseTokenMock&quot;
+  ... (еще 35 строк)
+🔑 Общие ключевые слова: email
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.430
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserAccountServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+        fun `should mark visit for current session user`() {
+            // GIVEN
+            val email = &quot;test@test.ru&quot;
+            val now = LocalDateTime.now(ZoneOffset.UTC)
+
+            Secu...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+🎯 Сходство: 0.430
+---
+Код теста:
+  @Test
+          fun `should mark visit for current session user`() {
+              // GIVEN
+              val email = &quot;test@test.ru&quot;
+              val now = LocalDateTime.now(ZoneOffset.UTC)
+  ... (еще 19 строк)
+🔑 Общие ключевые слова: email
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.424
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserAccountServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+        fun `should update current session user`() {
+            // GIVEN
+            val avatarUrl = &quot;test/avatar&quot;
+            val photoUrl = &quot;test/picture&quot;
+            val description = &quot;Some ...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+🎯 Сходство: 0.424
+---
+Код теста:
+  @Test
+          fun `should update current session user`() {
+              // GIVEN
+              val avatarUrl = &quot;test/avatar&quot;
+              val photoUrl = &quot;test/picture&quot;
+  ... (еще 39 строк)
+🔑 Общие ключевые слова: email
+
+</div>
+</details>
+</div>
+<div class="match-card" style="text-align: center; padding: 30px; background: #f8f9fa;">
+<p>... и еще 10 соответствий</p>
+</div>
+</div>
+</div>
+<div class="gaps-section">
+<h3>Выявленные пробелы в покрытии (3)</h3>
+<ul class="gaps-list">
+<li>Не покрыты критерии приемки: Вход с корректными email/паролем создает JWT-токен, Токен используется для авторизации последующих запросов, Сессия сохраняется на стороне клиента и сервера и еще 2</li><li>Не найдены тесты для ключевых тегов: login, jwt, session-management, logout</li><li>Отсутствуют тесты с высокой степенью уверенности в покрытии</li>
+</ul>
+</div>
+<div class="details-section">
+<details>
+<summary>Детальная информация и метрики</summary>
+<div class="details-content">
+ID требования: REQ-AUTH-02
+Категория: authentication
+Приоритет: high
+Количество критериев приемки: 5
+Количество тегов: 4
+Время анализа: 2026-01-30T15:38:11.864620500
+---
+Статистика покрытия:
+• Количество соответствий: 15
+• Максимальное сходство: 0.448
+• Среднее сходство: 0.406
+• Уровень уверенности: MEDIUM
+---
+ТЕСТЫ (15):
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+Сходство: 0.448
+Уверенность: MEDIUM
+Метаданные: className=, line=114, fileSize=11339
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\UserDetailControllerTest.kt
+Сходство: 0.444
+Уверенность: MEDIUM
+Метаданные: className=, line=104, fileSize=13281
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+Сходство: 0.435
+Уверенность: MEDIUM
+Метаданные: className=, line=157, fileSize=11339
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.430
+Уверенность: MEDIUM
+Метаданные: className=, line=331, fileSize=25334
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.424
+Уверенность: MEDIUM
+Метаданные: className=, line=308, fileSize=25334
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+Сходство: 0.405
+Уверенность: MEDIUM
+Метаданные: className=, line=188, fileSize=11339
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.404
+Уверенность: MEDIUM
+Метаданные: className=, line=257, fileSize=25334
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+Сходство: 0.400
+Уверенность: MEDIUM
+Метаданные: className=, line=264, fileSize=11339
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.394
+Уверенность: MEDIUM
+Метаданные: className=, line=197, fileSize=25334
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.390
+Уверенность: MEDIUM
+Метаданные: className=, line=117, fileSize=25334
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\FirebaseTokenAuthenticationFilterTest.kt
+Сходство: 0.389
+Уверенность: MEDIUM
+Метаданные: className=, line=214, fileSize=11339
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAccountServiceTest.kt
+Сходство: 0.388
+Уверенность: MEDIUM
+Метаданные: className=, line=541, fileSize=25334
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\filter\RememberLastVisitFilterTest.kt
+Сходство: 0.384
+Уверенность: MEDIUM
+Метаданные: className=, line=56, fileSize=2658
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\UserDetailControllerTest.kt
+Сходство: 0.380
+Уверенность: MEDIUM
+Метаданные: className=, line=357, fileSize=13281
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\auth\RoleServiceImplTest.kt
+Сходство: 0.379
+Уверенность: MEDIUM
+Метаданные: className=, line=137, fileSize=4343
+</div>
+</details>
+</div>
+</div>
+<div class="requirement-card medium-coverage">
+<div class="requirement-header">
+<div class="requirement-title">
+<div class="requirement-meta">
+<span class="requirement-id">REQ-EXERCISE-01</span>
+<span class="requirement-category">exercises</span>
+<span class="requirement-priority priority-high">HIGH</span>
+</div>
+<h2>3. Библиотека аудио-упражнений и отслеживание прогресса</h2>
+</div>
+<div>
+<span class="coverage-badge coverage-medium">
+46.7%
+</span>
+<span class="confidence-badge confidence-medium">
+Medium
+</span>
+</div>
+</div>
+<div class="requirement-description">
+Пользователь получает доступ к структурированной библиотеке аудио-упражнений, организованных по сериям и уровням сложности. Система отслеживает прогресс выполнения, сохраняет результаты каждого занятия и позволяет продолжить тренировку с последней точки.
+</div>
+<div class="criteria-section">
+<h4>Критерии приемки (5)</h4>
+<ul class="criteria-list">
+<li>Отображение доступных серий упражнений</li><li>Воспроизведение аудио-контента с контролем громкости</li><li>Сохранение прогресса после каждого упражнения</li><li>Возможность паузы и продолжения тренировки</li><li>Адаптация сложности на основе успешности выполнения</li>
+</ul>
+</div>
+<div class="tags-section">
+<span class="tag">audio-playback</span><span class="tag">progress-tracking</span><span class="tag">exercises</span><span class="tag">adaptive-learning</span>
+</div>
+<div class="ai-analysis-section">
+<h3>AI Analysis</h3>
+<div class="ai-explanation">
+<strong>Общий вывод:</strong> Тесты фокусируются на аудио и прогрессе, игнорируя UI и адаптацию
+</div>
+<div class="ai-analysis-grid">
+<div class="ai-aspect-card">
+<h4>✅ Покрытые аспекты</h4>
+<ul class="ai-aspect-list">
+<li>Воспроизведение аудио</li><li>Сохранение прогресса</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>❌ Непокрытые аспекты</h4>
+<ul class="ai-aspect-list">
+<li>Отображение серий упражнений</li><li>Адаптация сложности</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>🎯 Рекомендации</h4>
+<ul class="ai-aspect-list">
+<li>Добавить тесты UI</li><li>Тестировать адаптацию сложности</li>
+</ul>
+</div>
+</div>
+<div class="ai-analysis-grid" style="margin-top: 15px;">
+<div class="ai-aspect-card">
+<h4>✅ Покрытые критерии</h4>
+<ul class="ai-aspect-list">
+<li>Воспроизведение аудио-контента</li><li>Сохранение прогресса после упражнения</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>❌ Непокрытые критерии</h4>
+<ul class="ai-aspect-list">
+<li>Отображение доступных серий</li><li>Адаптация сложности на основе выполнения</li>
+</ul>
+</div>
+</div>
+<details>
+<summary>Полный AI анализ (JSON)</summary>
+<div class="details-content">
+{ &quot;coverage_assessment&quot;: &quot;partial&quot;, &quot;confidence&quot;: &quot;medium&quot;, &quot;covered_aspects&quot;: [&quot;Воспроизведение аудио&quot;, &quot;Сохранение прогресса&quot;], &quot;missing_aspects&quot;: [&quot;Отображение серий упражнений&quot;, &quot;Адаптация сложности&quot;], &quot;covered_criteria&quot;: [&quot;Воспроизведение аудио-контента&quot;, &quot;Сохранение прогресса после упражнения&quot;], &quot;missing_criteria&quot;: [&quot;Отображение доступных серий&quot;, &quot;Адаптация сложности на основе выполнения&quot;], &quot;explanation&quot;: &quot;Тесты фокусируются на аудио и прогрессе, игнорируя UI и адаптацию&quot;, &quot;recommendations
+</div>
+</details>
+</div>
+<div class="matches-section">
+<h3>Найденные соответствия (15)</h3>
+<div class="matches-grid">
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.458
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserAnalyticsServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should prepareAudioStreamForUser`() {
+        // GIVEN
+        val studyHistory = mockk&lt;StudyHistory&gt;()
+        val audioStreamMock = InputStream.nullInputStream()
+        val currentUs...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+🎯 Сходство: 0.458
+---
+Код теста:
+  @Test
+      fun `should prepareAudioStreamForUser`() {
+          // GIVEN
+          val studyHistory = mockk&lt;StudyHistory&gt;()
+          val audioStreamMock = InputStream.nullInputStream()
+  ... (еще 22 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.445
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserAnalyticsServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should prepareAudioFileMetaData with lera voice up to 18 years old user`() {
+        // GIVEN
+        val studyHistory = mockk&lt;StudyHistory&gt;()
+        val currentUser = mockk&lt;UserAccoun...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+🎯 Сходство: 0.445
+---
+Код теста:
+  @Test
+      fun `should prepareAudioFileMetaData with lera voice up to 18 years old user`() {
+          // GIVEN
+          val studyHistory = mockk&lt;StudyHistory&gt;()
+          val currentUser = mockk&lt;UserAccount&gt;()
+  ... (еще 18 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.434
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserAnalyticsServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should prepareAudioFileMetaData default speed correctly for one word and good statistics`() {
+        // GIVEN
+        val studyHistory = mockk&lt;StudyHistory&gt;()
+        val currentUser =...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+🎯 Сходство: 0.434
+---
+Код теста:
+  @Test
+      fun `should prepareAudioFileMetaData default speed correctly for one word and good statistics`() {
+          // GIVEN
+          val studyHistory = mockk&lt;StudyHistory&gt;()
+          val currentUser = mockk&lt;UserAccount&gt;()
+  ... (еще 22 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.433
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserAnalyticsServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should prepareAudioFileMetaData normal speed for single word`() {
+        // GIVEN
+        val currentUser = mockk&lt;UserAccount&gt;()
+        every { userAccountService.getCurrentUser() } r...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+🎯 Сходство: 0.433
+---
+Код теста:
+  @Test
+      fun `should prepareAudioFileMetaData normal speed for single word`() {
+          // GIVEN
+          val currentUser = mockk&lt;UserAccount&gt;()
+          every { userAccountService.getCurrentUser() } returns currentUser
+  ... (еще 17 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.433
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserAnalyticsServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should prepareAudioFileMetaData slow correctly for single word and bad statistics`() {
+        // GIVEN
+        val studyHistory = mockk&lt;StudyHistory&gt;()
+        val currentUser = mockk&lt;...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+🎯 Сходство: 0.433
+---
+Код теста:
+  @Test
+      fun `should prepareAudioFileMetaData slow correctly for single word and bad statistics`() {
+          // GIVEN
+          val studyHistory = mockk&lt;StudyHistory&gt;()
+          val currentUser = mockk&lt;UserAccount&gt;()
+  ... (еще 21 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card" style="text-align: center; padding: 30px; background: #f8f9fa;">
+<p>... и еще 10 соответствий</p>
+</div>
+</div>
+</div>
+<div class="gaps-section">
+<h3>Выявленные пробелы в покрытии (3)</h3>
+<ul class="gaps-list">
+<li>Не покрыты критерии приемки: Отображение доступных серий упражнений, Воспроизведение аудио-контента с контролем громкости, Сохранение прогресса после каждого упражнения и еще 2</li><li>Не найдены тесты для ключевых тегов: audio-playback, progress-tracking, adaptive-learning</li><li>Отсутствуют тесты с высокой степенью уверенности в покрытии</li>
+</ul>
+</div>
+<div class="details-section">
+<details>
+<summary>Детальная информация и метрики</summary>
+<div class="details-content">
+ID требования: REQ-EXERCISE-01
+Категория: exercises
+Приоритет: high
+Количество критериев приемки: 5
+Количество тегов: 4
+Время анализа: 2026-01-30T15:38:20.338235400
+---
+Статистика покрытия:
+• Количество соответствий: 15
+• Максимальное сходство: 0.458
+• Среднее сходство: 0.428
+• Уровень уверенности: MEDIUM
+---
+ТЕСТЫ (15):
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.458
+Уверенность: MEDIUM
+Метаданные: className=, line=340, fileSize=15932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.445
+Уверенность: MEDIUM
+Метаданные: className=, line=217, fileSize=15932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.434
+Уверенность: MEDIUM
+Метаданные: className=, line=269, fileSize=15932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.433
+Уверенность: MEDIUM
+Метаданные: className=, line=315, fileSize=15932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.433
+Уверенность: MEDIUM
+Метаданные: className=, line=294, fileSize=15932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.430
+Уверенность: MEDIUM
+Метаданные: className=, line=195, fileSize=15932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\AudioControllerTest.kt
+Сходство: 0.430
+Уверенность: MEDIUM
+Метаданные: className=, line=43, fileSize=1572
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.430
+Уверенность: MEDIUM
+Метаданные: className=, line=243, fileSize=15932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.428
+Уверенность: MEDIUM
+Метаданные: className=, line=143, fileSize=15932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.425
+Уверенность: MEDIUM
+Метаданные: className=, line=168, fileSize=15932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesPhrases\SeriesPhrasesRecordProcessorTest.kt
+Сходство: 0.423
+Уверенность: MEDIUM
+Метаданные: className=, line=76, fileSize=5225
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\AudiometryControllerTest.kt
+Сходство: 0.421
+Уверенность: MEDIUM
+Метаданные: className=, line=48, fileSize=2418
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\AudiometryServiceTest.kt
+Сходство: 0.416
+Уверенность: MEDIUM
+Метаданные: className=, line=76, fileSize=2891
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\AudiometryControllerTest.kt
+Сходство: 0.411
+Уверенность: MEDIUM
+Метаданные: className=, line=74, fileSize=2418
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\ExerciseServiceTest.kt
+Сходство: 0.407
+Уверенность: MEDIUM
+Метаданные: className=, line=192, fileSize=32058
+</div>
+</details>
+</div>
+</div>
+<div class="requirement-card medium-coverage">
+<div class="requirement-header">
+<div class="requirement-title">
+<div class="requirement-meta">
+<span class="requirement-id">REQ-PROGRESS-01</span>
+<span class="requirement-category">analytics</span>
+<span class="requirement-priority priority-medium">MEDIUM</span>
+</div>
+<h2>4. Персонализированная аналитика и визуализация прогресса</h2>
+</div>
+<div>
+<span class="coverage-badge coverage-medium">
+42.6%
+</span>
+<span class="confidence-badge confidence-medium">
+Medium
+</span>
+</div>
+</div>
+<div class="requirement-description">
+Система собирает и анализирует данные о тренировках пользователя, предоставляя детальную статистику через дашборд. Включает графики прогресса, отчеты по периодам, достижения и рекомендации для улучшения результатов.
+</div>
+<div class="criteria-section">
+<h4>Критерии приемки (5)</h4>
+<ul class="criteria-list">
+<li>Дашборд с ключевыми метриками тренировок</li><li>Графики прогресса по дням/неделям/месяцам</li><li>Детальная статистика по типам упражнений</li><li>Система достижений и наград</li><li>Персональные рекомендации на основе прогресса</li>
+</ul>
+</div>
+<div class="tags-section">
+<span class="tag">dashboard</span><span class="tag">analytics</span><span class="tag">visualization</span><span class="tag">recommendations</span>
+</div>
+<div class="ai-analysis-section">
+<h3>AI Analysis</h3>
+<div class="ai-explanation">
+<strong>Общий вывод:</strong> Тесты покрывают часть функционала, но ключевые аспекты отсутствуют
+</div>
+<div class="ai-analysis-grid">
+<div class="ai-aspect-card">
+<h4>✅ Покрытые аспекты</h4>
+<ul class="ai-aspect-list">
+<li>Графики прогресса</li><li>Детальная статистика</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>❌ Непокрытые аспекты</h4>
+<ul class="ai-aspect-list">
+<li>Ключевые метрики</li><li>Система достижений</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>🎯 Рекомендации</h4>
+<ul class="ai-aspect-list">
+<li>Добавить тесты для ключевых метрик</li><li>Покрыть систему достижений тестами</li>
+</ul>
+</div>
+</div>
+<div class="ai-analysis-grid" style="margin-top: 15px;">
+<div class="ai-aspect-card">
+<h4>✅ Покрытые критерии</h4>
+<ul class="ai-aspect-list">
+<li>Статус прогресса пользователя</li><li>Статистика за день</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>❌ Непокрытые критерии</h4>
+<ul class="ai-aspect-list">
+<li>Отчеты по периодам</li><li>Персональные рекомендации</li>
+</ul>
+</div>
+</div>
+<details>
+<summary>Полный AI анализ (JSON)</summary>
+<div class="details-content">
+{ &quot;coverage_assessment&quot;: &quot;partial&quot;, &quot;confidence&quot;: &quot;medium&quot;, &quot;covered_aspects&quot;: [&quot;Графики прогресса&quot;, &quot;Детальная статистика&quot;], &quot;missing_aspects&quot;: [&quot;Ключевые метрики&quot;, &quot;Система достижений&quot;], &quot;covered_criteria&quot;: [&quot;Статус прогресса пользователя&quot;, &quot;Статистика за день&quot;], &quot;missing_criteria&quot;: [&quot;Отчеты по периодам&quot;, &quot;Персональные рекомендации&quot;], &quot;explanation&quot;: &quot;Тесты покрывают часть функционала, но ключевые аспекты отсутствуют&quot;, &quot;recommendations&quot;: [&quot;Добавить тесты для ключевых метрик&quot;, &quot;Покрыть систему д
+</div>
+</details>
+</div>
+<div class="matches-section">
+<h3>Найденные соответствия (15)</h3>
+<div class="matches-grid">
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.387
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+WeekExercisingStatusRetrieverTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `getStatus should return GREAT status when user progress in the range of the status`() {
+        // GIVEN
+        val period = listOf(studyHistory)
+        val userAccountId = 1L
+       ...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\WeekExercisingStatusRetrieverTest.kt
+🎯 Сходство: 0.387
+---
+Код теста:
+  @Test
+      fun `getStatus should return GREAT status when user progress in the range of the status`() {
+          // GIVEN
+          val period = listOf(studyHistory)
+          val userAccountId = 1L
+  ... (еще 21 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.384
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+DayExercisingStatusRetrieverTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `getStatus should return GREAT status when user progress in the range of the status`() {
+        // GIVEN
+        every { requirementsManager.getPeriodRequirements(UserExercisingPeriod.D...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\DayExercisingStatusRetrieverTest.kt
+🎯 Сходство: 0.384
+---
+Код теста:
+  @Test
+      fun `getStatus should return GREAT status when user progress in the range of the status`() {
+          // GIVEN
+          every { requirementsManager.getPeriodRequirements(UserExercisingPeriod.DAY) } returns requirementsStatuses
+          every { goodStudyHistory.executionSeconds } returns 15 * 60
+  ... (еще 11 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.383
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+StudyHistoryServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `getDailyStatistics (2 equals exercise) should return statistics for day`() {
+        // GIVEN
+        val userId = 1L
+        val exerciseDate = LocalDateTime.now()
+        val seriesId...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\StudyHistoryServiceTest.kt
+🎯 Сходство: 0.383
+---
+Код теста:
+  @Test
+      fun `getDailyStatistics (2 equals exercise) should return statistics for day`() {
+          // GIVEN
+          val userId = 1L
+          val exerciseDate = LocalDateTime.now()
+  ... (еще 43 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.382
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+DayExercisingStatusRetrieverTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `getStatus should return GOOD status when user progress in the range of the status`() {
+        // GIVEN
+        every { requirementsManager.getPeriodRequirements(UserExercisingPeriod.DA...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\DayExercisingStatusRetrieverTest.kt
+🎯 Сходство: 0.382
+---
+Код теста:
+  @Test
+      fun `getStatus should return GOOD status when user progress in the range of the status`() {
+          // GIVEN
+          every { requirementsManager.getPeriodRequirements(UserExercisingPeriod.DAY) } returns requirementsStatuses
+          every { goodStudyHistory.executionSeconds } returns 10 * 60
+  ... (еще 10 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.382
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+StudyHistoryServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `getDailyStatistics should return statistics for day`() {
+        // GIVEN
+        val userId = 1L
+        val exerciseDate = LocalDateTime.now()
+        val seriesId = 1L
+        val ex...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\StudyHistoryServiceTest.kt
+🎯 Сходство: 0.382
+---
+Код теста:
+  @Test
+      fun `getDailyStatistics should return statistics for day`() {
+          // GIVEN
+          val userId = 1L
+          val exerciseDate = LocalDateTime.now()
+  ... (еще 43 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card" style="text-align: center; padding: 30px; background: #f8f9fa;">
+<p>... и еще 10 соответствий</p>
+</div>
+</div>
+</div>
+<div class="gaps-section">
+<h3>Выявленные пробелы в покрытии (4)</h3>
+<ul class="gaps-list">
+<li>Не покрыты критерии приемки: Дашборд с ключевыми метриками тренировок, Графики прогресса по дням/неделям/месяцам, Детальная статистика по типам упражнений и еще 2</li><li>Не найдены тесты для ключевых тегов: dashboard, analytics, visualization, recommendations</li><li>Отсутствуют тесты с высокой степенью уверенности в покрытии</li><li>Все найденные соответствия имеют низкое семантическое сходство (&lt; 0.4)</li>
+</ul>
+</div>
+<div class="details-section">
+<details>
+<summary>Детальная информация и метрики</summary>
+<div class="details-content">
+ID требования: REQ-PROGRESS-01
+Категория: analytics
+Приоритет: medium
+Количество критериев приемки: 5
+Количество тегов: 4
+Время анализа: 2026-01-30T15:38:29.221122400
+---
+Статистика покрытия:
+• Количество соответствий: 15
+• Максимальное сходство: 0.387
+• Среднее сходство: 0.370
+• Уровень уверенности: MEDIUM
+---
+ТЕСТЫ (15):
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\WeekExercisingStatusRetrieverTest.kt
+Сходство: 0.387
+Уверенность: MEDIUM
+Метаданные: className=, line=80, fileSize=5014
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\DayExercisingStatusRetrieverTest.kt
+Сходство: 0.384
+Уверенность: MEDIUM
+Метаданные: className=, line=71, fileSize=3932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\StudyHistoryServiceTest.kt
+Сходство: 0.383
+Уверенность: MEDIUM
+Метаданные: className=, line=342, fileSize=16113
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\DayExercisingStatusRetrieverTest.kt
+Сходство: 0.382
+Уверенность: MEDIUM
+Метаданные: className=, line=85, fileSize=3932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\StudyHistoryServiceTest.kt
+Сходство: 0.382
+Уверенность: MEDIUM
+Метаданные: className=, line=246, fileSize=16113
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\StudyHistoryServiceTest.kt
+Сходство: 0.379
+Уверенность: MEDIUM
+Метаданные: className=, line=295, fileSize=16113
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\WeekExercisingStatusRetrieverTest.kt
+Сходство: 0.379
+Уверенность: MEDIUM
+Метаданные: className=, line=105, fileSize=5014
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\UserDayStatisticsServiceTest.kt
+Сходство: 0.379
+Уверенность: MEDIUM
+Метаданные: className=, line=90, fileSize=3726
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\StudyHistoryServiceTest.kt
+Сходство: 0.373
+Уверенность: MEDIUM
+Метаданные: className=, line=437, fileSize=16113
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\DayExercisingStatusRetrieverTest.kt
+Сходство: 0.361
+Уверенность: MEDIUM
+Метаданные: className=, line=98, fileSize=3932
+
+====== ТЕСТ: test_method_48548530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\StudyHistoriesProgressStatusManagerTest.kt
+Сходство: 0.357
+Уверенность: MEDIUM
+Метаданные: className=, line=58, fileSize=3278
+
+====== ТЕСТ: test_method_48548530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\StudyHistoriesProgressStatusManagerTest.kt
+Сходство: 0.355
+Уверенность: MEDIUM
+Метаданные: className=, line=82, fileSize=3278
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\statistics\progress\status\impl\retriever\WeekExercisingStatusRetrieverTest.kt
+Сходство: 0.352
+Уверенность: MEDIUM
+Метаданные: className=, line=130, fileSize=5014
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\ExerciseServiceTest.kt
+Сходство: 0.352
+Уверенность: MEDIUM
+Метаданные: className=, line=265, fileSize=32058
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\ExerciseServiceTest.kt
+Сходство: 0.350
+Уверенность: LOW
+Метаданные: className=, line=192, fileSize=32058
+</div>
+</details>
+</div>
+</div>
+<div class="requirement-card medium-coverage">
+<div class="requirement-header">
+<div class="requirement-title">
+<div class="requirement-meta">
+<span class="requirement-id">REQ-ADMIN-01</span>
+<span class="requirement-category">administration</span>
+<span class="requirement-priority priority-medium">MEDIUM</span>
+</div>
+<h2>5. Административное управление контентом упражнений</h2>
+</div>
+<div>
+<span class="coverage-badge coverage-medium">
+45.5%
+</span>
+<span class="confidence-badge confidence-medium">
+Medium
+</span>
+</div>
+</div>
+<div class="requirement-description">
+Специалисты и администраторы имеют доступ к панели управления для создания и редактирования аудио-упражнений. Включает загрузку аудио-файлов, настройку параметров упражнений, организацию в серии и управление видимостью контента.
+</div>
+<div class="criteria-section">
+<h4>Критерии приемки (5)</h4>
+<ul class="criteria-list">
+<li>Интерфейс для создания/редактирования упражнений</li><li>Загрузка аудио-файлов с валидацией форматов</li><li>Настройка метаданных упражнений (сложность, описание)</li><li>Организация упражнений в иерархическую структуру</li><li>Управление публикацией и доступностью контента</li>
+</ul>
+</div>
+<div class="tags-section">
+<span class="tag">admin-panel</span><span class="tag">content-management</span><span class="tag">audio-upload</span><span class="tag">exercise-editor</span>
+</div>
+<div class="ai-analysis-section">
+<h3>AI Analysis</h3>
+<div class="ai-explanation">
+<strong>Общий вывод:</strong> Тесты покрывают создание упражнений и загрузку аудио, но не проверяют настройки и публикацию
+</div>
+<div class="ai-analysis-grid">
+<div class="ai-aspect-card">
+<h4>✅ Покрытые аспекты</h4>
+<ul class="ai-aspect-list">
+<li>создание упражнений</li><li>загрузка аудио-файлов</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>❌ Непокрытые аспекты</h4>
+<ul class="ai-aspect-list">
+<li>настройка метаданных</li><li>управление публикацией</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>🎯 Рекомендации</h4>
+<ul class="ai-aspect-list">
+<li>Добавить тесты на валидацию аудио</li><li>Проверить настройки видимости и сложности</li>
+</ul>
+</div>
+</div>
+<div class="ai-analysis-grid" style="margin-top: 15px;">
+<div class="ai-aspect-card">
+<h4>✅ Покрытые критерии</h4>
+<ul class="ai-aspect-list">
+<li>интерфейс для создания/редактирования</li><li>организация в иерархическую структуру</li>
+</ul>
+</div>
+<div class="ai-aspect-card">
+<h4>❌ Непокрытые критерии</h4>
+<ul class="ai-aspect-list">
+<li>валидация форматов аудио</li><li>настройка сложности</li>
+</ul>
+</div>
+</div>
+<details>
+<summary>Полный AI анализ (JSON)</summary>
+<div class="details-content">
+{ &quot;coverage_assessment&quot;: &quot;partial&quot;, &quot;confidence&quot;: &quot;medium&quot;, &quot;covered_aspects&quot;: [&quot;создание упражнений&quot;, &quot;загрузка аудио-файлов&quot;], &quot;missing_aspects&quot;: [&quot;настройка метаданных&quot;, &quot;управление публикацией&quot;], &quot;covered_criteria&quot;: [&quot;интерфейс для создания/редактирования&quot;, &quot;организация в иерархическую структуру&quot;], &quot;missing_criteria&quot;: [&quot;валидация форматов аудио&quot;, &quot;настройка сложности&quot;], &quot;explanation&quot;: &quot;Тесты покрывают создание упражнений и загрузку аудио, но не проверяют настройки и публикацию&quot;, &quot;recommendat
+</div>
+</details>
+</div>
+<div class="matches-section">
+<h3>Найденные соответствия (15)</h3>
+<div class="matches-grid">
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.427
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+ExerciseServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should get 2 exercises with 2 available for user-admin`() {
+        // GIVEN
+        ReflectionTestUtils.setField(exerciseService, &quot;minRepetitionIndex&quot;, 0.8)
+        ReflectionTestUtils...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\ExerciseServiceTest.kt
+🎯 Сходство: 0.427
+---
+Код теста:
+  @Test
+      fun `should get 2 exercises with 2 available for user-admin`() {
+          // GIVEN
+          ReflectionTestUtils.setField(exerciseService, &quot;minRepetitionIndex&quot;, 0.8)
+          ReflectionTestUtils.setField(exerciseService, &quot;minRightAnswersIndex&quot;, 0.8)
+  ... (еще 21 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.413
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+SeriesPhrasesRecordProcessorTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should create correct exercise`() {
+        // GIVEN
+        val seriesPhrasesRecord =
+            SeriesPhrasesRecord(
+                level = 1,
+                code = &quot;subgroup code&quot;...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesPhrases\SeriesPhrasesRecordProcessorTest.kt
+🎯 Сходство: 0.413
+---
+Код теста:
+  @Test
+      fun `should create correct exercise`() {
+          // GIVEN
+          val seriesPhrasesRecord =
+              SeriesPhrasesRecord(
+  ... (еще 32 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.403
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+SeriesWordsRecordProcessorTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should create correct exercise`() {
+        val expected = createExercise()
+        val actual =
+            seriesWordsRecordProcessor
+                .process(
+                    mut...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesWords\SeriesWordsRecordProcessorTest.kt
+🎯 Сходство: 0.403
+---
+Код теста:
+  @Test
+      fun `should create correct exercise`() {
+          val expected = createExercise()
+          val actual =
+              seriesWordsRecordProcessor
+  ... (еще 18 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.401
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+UserAnalyticsServiceTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should prepareAudioFileMetaData with lera voice up to 18 years old user`() {
+        // GIVEN
+        val studyHistory = mockk&lt;StudyHistory&gt;()
+        val currentUser = mockk&lt;UserAccoun...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+🎯 Сходство: 0.401
+---
+Код теста:
+  @Test
+      fun `should prepareAudioFileMetaData with lera voice up to 18 years old user`() {
+          // GIVEN
+          val studyHistory = mockk&lt;StudyHistory&gt;()
+          val currentUser = mockk&lt;UserAccount&gt;()
+  ... (еще 18 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card">
+<div class="match-header">
+<div class="match-name">test_method_61708530</div>
+<div class="match-similarity">
+0.400
+<span class="confidence-medium confidence-badge" style="margin-left: 5px; padding: 2px 8px; font-size: 0.8rem;">
+Medium
+</span>
+</div>
+</div>
+<div class="match-file">
+SignalSeriesRecordProcessorTest.kt
+</div>
+<div class="match-snippet">
+@Test
+    fun `should create correct exercise`() {
+        val exercise = createExercise(subGroupDuration)
+        every { exerciseRepositoryMock.save(exercise) } returns exercise
+        every { exer...
+</div>
+<details style="margin-top: 10px;">
+<summary>Доказательства соответствия</summary>
+<div class="details-content">
+📝 Тест: test_method_61708530
+📁 Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\nonspeech\SignalSeriesRecordProcessorTest.kt
+🎯 Сходство: 0.400
+---
+Код теста:
+  @Test
+      fun `should create correct exercise`() {
+          val exercise = createExercise(subGroupDuration)
+          every { exerciseRepositoryMock.save(exercise) } returns exercise
+          every { exerciseRepositoryMock.findByNameAndLevel(&quot;По 2 сигнала разной длительности.&quot;, 1) } returns null
+  ... (еще 20 строк)
+
+</div>
+</details>
+</div>
+<div class="match-card" style="text-align: center; padding: 30px; background: #f8f9fa;">
+<p>... и еще 10 соответствий</p>
+</div>
+</div>
+</div>
+<div class="gaps-section">
+<h3>Выявленные пробелы в покрытии (3)</h3>
+<ul class="gaps-list">
+<li>Не покрыты критерии приемки: Интерфейс для создания/редактирования упражнений, Загрузка аудио-файлов с валидацией форматов, Настройка метаданных упражнений (сложность, описание) и еще 2</li><li>Не найдены тесты для ключевых тегов: admin-panel, content-management, audio-upload, exercise-editor</li><li>Отсутствуют тесты с высокой степенью уверенности в покрытии</li>
+</ul>
+</div>
+<div class="details-section">
+<details>
+<summary>Детальная информация и метрики</summary>
+<div class="details-content">
+ID требования: REQ-ADMIN-01
+Категория: administration
+Приоритет: medium
+Количество критериев приемки: 5
+Количество тегов: 4
+Время анализа: 2026-01-30T15:38:42.689504400
+---
+Статистика покрытия:
+• Количество соответствий: 15
+• Максимальное сходство: 0.427
+• Среднее сходство: 0.396
+• Уровень уверенности: MEDIUM
+---
+ТЕСТЫ (15):
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\ExerciseServiceTest.kt
+Сходство: 0.427
+Уверенность: MEDIUM
+Метаданные: className=, line=126, fileSize=32058
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesPhrases\SeriesPhrasesRecordProcessorTest.kt
+Сходство: 0.413
+Уверенность: MEDIUM
+Метаданные: className=, line=76, fileSize=5225
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesWords\SeriesWordsRecordProcessorTest.kt
+Сходство: 0.403
+Уверенность: MEDIUM
+Метаданные: className=, line=137, fileSize=11375
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.401
+Уверенность: MEDIUM
+Метаданные: className=, line=217, fileSize=15932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\nonspeech\SignalSeriesRecordProcessorTest.kt
+Сходство: 0.400
+Уверенность: MEDIUM
+Метаданные: className=, line=102, fileSize=7652
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesWords\SeriesWordsRecordProcessorTest.kt
+Сходство: 0.398
+Уверенность: MEDIUM
+Метаданные: className=, line=317, fileSize=11375
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.395
+Уверенность: MEDIUM
+Метаданные: className=, line=340, fileSize=15932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesWordsKoroleva\SeriesWordsKorolevaRecordProcessorTest.kt
+Сходство: 0.393
+Уверенность: MEDIUM
+Метаданные: className=, line=252, fileSize=12430
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\UserAnalyticsServiceTest.kt
+Сходство: 0.392
+Уверенность: MEDIUM
+Метаданные: className=, line=315, fileSize=15932
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\AudiometryControllerTest.kt
+Сходство: 0.389
+Уверенность: MEDIUM
+Метаданные: className=, line=48, fileSize=2418
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesWordsKoroleva\SeriesWordsKorolevaRecordProcessorTest.kt
+Сходство: 0.387
+Уверенность: MEDIUM
+Метаданные: className=, line=137, fileSize=12430
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\seriesSyllablesKoroleva\SeriesSyllablesKorolevaRecordProcessorTest.kt
+Сходство: 0.387
+Уверенность: MEDIUM
+Метаданные: className=, line=126, fileSize=9378
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\controller\AudioControllerTest.kt
+Сходство: 0.386
+Уверенность: MEDIUM
+Метаданные: className=, line=43, fileSize=1572
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\upload\csv\audiometrySpeech\LopotkoRecordProcessorTest.kt
+Сходство: 0.384
+Уверенность: MEDIUM
+Метаданные: className=, line=193, fileSize=6833
+
+====== ТЕСТ: test_method_61708530 ======
+Файл: C:\brn\555\src\test\kotlin\com\epam\brn\service\TaskServiceTest.kt
+Сходство: 0.384
+Уверенность: MEDIUM
+Метаданные: className=, line=250, fileSize=23709
+</div>
+</details>
+</div>
+</div>
+<div class="footer">
+<p>Generated by Semantic Coverage System v2.0</p>
+<p>AI-powered test requirement traceability with acceptance criteria analysis</p>
+<p style="margin-top: 10px; font-size: 0.8rem;">
+Проект Brain-up/brn | https://brainup.site | https://github.com/Brain-up/brn
+</p>
+<p style="margin-top: 5px; font-size: 0.75rem; color: #adb5bd;">
+Отчет сгенерирован: 2026-01-30 15:38:42 | Требований: 5 | Среднее покрытие: 45.5%
+</p>
+</div>
+</div>
+</body>
+</html>
