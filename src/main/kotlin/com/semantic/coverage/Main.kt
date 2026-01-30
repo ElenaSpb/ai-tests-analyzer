@@ -5,7 +5,9 @@ import com.semantic.coverage.aiServices.AiService
 import com.semantic.coverage.aiServices.MistralService
 import com.semantic.coverage.aiServices.OllamaService
 import com.semantic.coverage.aiServices.OpenAiV2Service
+import com.semantic.coverage.embedding.EmbeddingService
 import com.semantic.coverage.embedding.LocalEmbeddingService
+import com.semantic.coverage.embedding.MistralEmbeddingService
 import com.semantic.coverage.embedding.OpenAIEmbeddingService
 import com.semantic.coverage.parser.RequirementsLoader
 import com.semantic.coverage.parser.TestsParser
@@ -64,7 +66,7 @@ fun main(args: Array<String>) {
         ArgType.String,
         shortName = "mistral-key",
         description = "Mistral api-key"
-    ).default("dPw0OW84uif7ozCOi6CDIojujopazKva")
+    ).default("hehehe")
 
     parser.parse(args)
 
@@ -92,8 +94,13 @@ fun main(args: Array<String>) {
         // 3. Инициализация анализатора
         val localEmbeddingService = LocalEmbeddingService()
         val openAiEmbeddingService = OpenAIEmbeddingService(openaiKey)
+        val mistralEmbeddingService = MistralEmbeddingService(mistralKey)
+        val embeddingService: EmbeddingService =
+            if(openaiKey.isNotBlank()) openAiEmbeddingService
+            else if(mistralKey.isNotBlank()) mistralEmbeddingService
+            else localEmbeddingService
         val analyzer = CoverageAiAnalyzer(
-            embeddingService = localEmbeddingService,
+            embeddingService = embeddingService,
             aiService = aiService,
             useAI = useAI && aiService != null
         )

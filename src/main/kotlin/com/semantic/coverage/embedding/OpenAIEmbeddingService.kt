@@ -42,7 +42,7 @@ class OpenAIEmbeddingService(
     // Кэш для эмбеддингов
     private val embeddingCache = mutableMapOf<String, FloatArray>()
 
-    override fun getEmbedding(text: String): FloatArray {
+    override fun getTextEmbedding(text: String): FloatArray {
         return embeddingCache.getOrPut(text) {
             try {
                 val embeddings = getEmbeddingsBatch(listOf(text))

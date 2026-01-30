@@ -12,7 +12,7 @@ class LocalEmbeddingService : EmbeddingService {
     // Кэш для уже вычисленных эмбеддингов
     private val embeddingCache = mutableMapOf<String, FloatArray>()
 
-    override fun getEmbedding(text: String): FloatArray {
+    override fun getTextEmbedding(text: String): FloatArray {
         return embeddingCache.getOrPut(text) {
             // В реальной реализации здесь будет вызов TensorFlow модели
             // Для прототипа используем упрощенный алгоритм

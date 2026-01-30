@@ -18,14 +18,14 @@ class CoverageAnalyzer(
     ): List<CoverageReport> {
         // Векторизуем требования
         val requirementsWithEmbeddings = requirements.map { req ->
-            req.copy(embedding = embeddingService.getEmbedding("${req.title} ${req.description}"))
+            req.copy(embedding = embeddingService.getTextEmbedding("${req.title} ${req.description}"))
         }
 
         // Векторизуем тесты (при необходимости)
         val testChunksWithEmbeddings = testChunks.map { chunk ->
             if (chunk.embedding == null) {
                 val enrichedContent = "${chunk.testName} ${chunk.content} ${chunk.metadata.values.joinToString(" ")}"
-                chunk.copy(embedding = embeddingService.getEmbedding(enrichedContent))
+                chunk.copy(embedding = embeddingService.getTextEmbedding(enrichedContent))
             } else {
                 chunk
             }

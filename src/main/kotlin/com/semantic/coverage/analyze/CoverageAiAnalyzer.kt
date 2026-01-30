@@ -24,7 +24,7 @@ class CoverageAiAnalyzer(
         println("📊 Векторизация требований...")
         val requirementsWithEmbeddings = requirements.mapIndexed { index, req ->
             print("\r   Обработано ${index + 1}/${requirements.size} требований")
-            req.copy(embedding = embeddingService.getEmbedding(req.getFullTextForEmbedding()))
+            req.copy(embedding = embeddingService.getTextEmbedding(req.getFullTextForEmbedding()))
         }
         println()
 
@@ -42,7 +42,7 @@ class CoverageAiAnalyzer(
                         append(chunk.metadata.values.joinToString(" "))
                     }
                 }
-                chunk.copy(embedding = embeddingService.getEmbedding(enrichedContent))
+                chunk.copy(embedding = embeddingService.getCodeEmbedding(enrichedContent))
             } else {
                 chunk
             }
@@ -149,7 +149,7 @@ class CoverageAiAnalyzer(
                     testText.contains(criterion, ignoreCase = true) ||
                             (match.testChunk.embedding?.let { embedding ->
                                 embeddingService.cosineSimilarity(
-                                    embeddingService.getEmbedding(criterion),
+                                    embeddingService.getTextEmbedding(criterion),
                                     embedding
                                 ) > 0.6f
                             } ?: false)
@@ -211,7 +211,7 @@ class CoverageAiAnalyzer(
                     testText.contains(criterion, ignoreCase = true) ||
                             (match.testChunk.embedding?.let { embedding ->
                                 embeddingService.cosineSimilarity(
-                                    embeddingService.getEmbedding(criterion),
+                                    embeddingService.getTextEmbedding(criterion),
                                     embedding
                                 ) > 0.55f
                             } ?: false)

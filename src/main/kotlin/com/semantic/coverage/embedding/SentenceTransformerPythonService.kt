@@ -92,7 +92,7 @@ except Exception as e:
         }
     }
 
-    override fun getEmbedding(text: String): FloatArray {
+    override fun getTextEmbedding(text: String): FloatArray {
         if (!isRunning) {
             throw IllegalStateException("Python process not running")
         }
