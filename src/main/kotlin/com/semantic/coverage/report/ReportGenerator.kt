@@ -1,8 +1,7 @@
 package com.semantic.coverage.report
 
-// reporter.kt
 import com.semantic.coverage.dto.ConfidenceLevel
-import analyze.CoverageReport
+import com.semantic.coverage.analyze.CoverageReport
 import java.io.File
 
 class ReportGenerator {

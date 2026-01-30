@@ -4,16 +4,15 @@ import java.util.*
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 
-class LocalEmbeddingService {
+class LocalEmbeddingService : EmbeddingService {
     // Используем MiniLM модель через TensorFlow или локальную версию
     // Для прототипа можно использовать упрощенный TF Hub-подобный подход
-    private val modelPath = "models/all-MiniLM-L6-v2"
     private val dimension = 384 // Размерность для MiniLM
 
     // Кэш для уже вычисленных эмбеддингов
     private val embeddingCache = mutableMapOf<String, FloatArray>()
 
-    fun getEmbedding(text: String): FloatArray {
+    override fun getTextEmbedding(text: String): FloatArray {
         return embeddingCache.getOrPut(text) {
             // В реальной реализации здесь будет вызов TensorFlow модели
             // Для прототипа используем упрощенный алгоритм
@@ -53,7 +52,7 @@ class LocalEmbeddingService {
         return embedding
     }
 
-    fun cosineSimilarity(vec1: FloatArray, vec2: FloatArray): Float {
+    override fun cosineSimilarity(vec1: FloatArray, vec2: FloatArray): Float {
         require(vec1.size == vec2.size) { "Vectors must have same dimension" }
 
         var dotProduct = 0.0f

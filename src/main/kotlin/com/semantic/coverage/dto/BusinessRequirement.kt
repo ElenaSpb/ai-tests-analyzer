@@ -4,7 +4,7 @@ package com.semantic.coverage.dto
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class Requirement @JsonCreator constructor(
+data class BusinessRequirement @JsonCreator constructor(
     @JsonProperty("id")
     val id: String,
 
@@ -20,6 +20,12 @@ data class Requirement @JsonCreator constructor(
     @JsonProperty("priority")
     val priority: String = "medium",
 
+    @JsonProperty("acceptance_criteria")
+    val acceptanceCriteria: List<String> = emptyList(),
+
+    @JsonProperty("tags")
+    val tags: List<String> = emptyList(),
+
     @JsonProperty("embedding", required = false)
     val embedding: FloatArray? = null
 ) {
@@ -28,13 +34,15 @@ data class Requirement @JsonCreator constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Requirement
+        other as BusinessRequirement
 
         if (id != other.id) return false
         if (title != other.title) return false
         if (description != other.description) return false
         if (category != other.category) return false
         if (priority != other.priority) return false
+        if (acceptanceCriteria != other.acceptanceCriteria) return false
+        if (tags != other.tags) return false
         if (embedding != null) {
             if (other.embedding == null) return false
             if (!embedding.contentEquals(other.embedding)) return false
@@ -49,11 +57,27 @@ data class Requirement @JsonCreator constructor(
         result = 31 * result + description.hashCode()
         result = 31 * result + category.hashCode()
         result = 31 * result + priority.hashCode()
+        result = 31 * result + acceptanceCriteria.hashCode()
+        result = 31 * result + tags.hashCode()
         result = 31 * result + (embedding?.contentHashCode() ?: 0)
         return result
     }
 
     override fun toString(): String {
-        return "Requirement(id='$id', title='$title', description='$description', category='$category', priority='$priority')"
+        return "Requirement(id='$id', title='$title', category='$category', priority='$priority', " +
+                "acceptanceCriteria=${acceptanceCriteria.size}, tags=${tags.size})"
+    }
+
+    // Утилита для получения полного текста для векторизации
+    fun getFullTextForEmbedding(): String {
+        val criteriaText = if (acceptanceCriteria.isNotEmpty()) {
+            "\nКритерии приемки: ${acceptanceCriteria.joinToString("; ")}"
+        } else ""
+
+        val tagsText = if (tags.isNotEmpty()) {
+            "\nТеги: ${tags.joinToString(", ")}"
+        } else ""
+
+        return "$title\n$description$criteriaText$tagsText"
     }
 }
