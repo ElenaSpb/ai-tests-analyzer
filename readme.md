@@ -83,7 +83,7 @@
 4. с помощью сервиса от google gemini-pro
 5. будут еще реализации для сравнения использования и других ai-сервисов
 
-На мо взгляд самые удачные из которых удалось попробовать, это 
+На мой взгляд самые удачные из которых удалось попробовать, это 
 1. mistral, модель для ананлиза  'mistral-medium', для эмбединга кода 'codestral-embed' / 'mistral-embed'', 
 но токены кончились пока тестировала и приложила отчет только на одно бизнес требование: 
 https://drive.google.com/file/d/1XLCVEQrJMkCq7h8VAEh_FtW_FakSQkzN/view?usp=drive_link
@@ -91,6 +91,7 @@ https://drive.google.com/file/d/1XLCVEQrJMkCq7h8VAEh_FtW_FakSQkzN/view?usp=drive
 2. open-ai, модель для ананлиза 'gpt-4-0125-preview', для эмбединга "text-embedding-3-large"/"text-embedding-3-small"
 вот полный отчет при платной подписке https://drive.google.com/file/d/1YlPw6qS73UP1GPXqSA8tJc1C5if0MolC/view?usp=drive_link
    (для удобства чтения его надо скачать себе и открыть - это html страница)
+
 ### Почему это жизнеспособно?
 1. **Практичность** - использует доступные AI-инструменты
 2. **Объяснимость** - не просто "чёрный ящик". 
