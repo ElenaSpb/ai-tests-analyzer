@@ -43,7 +43,6 @@ class CoverageAiAnalyzer(
                         append(chunk.metadata.values.joinToString(" "))
                     }
                 }
-                // Используем один сервис для требований и кода
                 chunk.copy(embedding = embeddingService.getTextEmbedding(enrichedContent))
             } else {
                 chunk
@@ -91,7 +90,6 @@ class CoverageAiAnalyzer(
                     analysis
                 } catch (e: Exception) {
                     println("❌ Ошибка AI анализа: ${e.message}")
-                    println("   Stack trace: ${e.stackTrace.take(5).joinToString("\n   ")}")
                     null
                 }
             } else {
@@ -410,13 +408,16 @@ class CoverageAiAnalyzer(
             "Нет найденных тестов для этого требования"
         }
 
-        // УПРОЩЕННЫЙ и более четкий промпт
+        // Улучшенный промпт с четкими инструкциями
         val prompt = """
             Ты - старший QA инженер. Проанализируй покрытие тестами.
             
-            ВАЖНО: Ответь ТОЛЬКО в формате JSON без дополнительного текста!
+            ВАЖНО: 
+            1. Ответь ТОЛЬКО в формате JSON без дополнительного текста!
+            2. Не используй многоточия (...) нигде в ответе!
+            3. Все строки должны быть полными и завершенными.
             
-            JSON должен содержать ВСЕ эти поля:
+            Формат ответа:
             {
               "coverage_assessment": "full|partial|none",
               "confidence": "high|medium|low",
@@ -424,29 +425,28 @@ class CoverageAiAnalyzer(
               "missing_aspects": ["аспект который не покрыт", "другой непокрытый аспект"],
               "covered_criteria": ["критерий 1", "критерий 2"],
               "missing_criteria": ["непокрытый критерий"],
-              "explanation": "Краткое объяснение на русском языке",
+              "explanation": "Краткое объяснение на русском языке, не более 2 предложений",
               "recommendations": ["конкретная рекомендация 1", "конкретная рекомендация 2"]
             }
             
-            Правила заполнения:
-            1. covered_aspects: минимум 2 конкретных аспекта требования, которые покрыты тестами
-            2. missing_aspects: минимум 1 аспект, который не покрыт
-            3. recommendations: минимум 2 конкретные рекомендации по улучшению тестов
-            
-            Если информации недостаточно, используй эти дефолтные значения:
-            - covered_aspects: ["базовая функциональность", "положительные сценарии"]
-            - missing_aspects: ["обработка ошибок", "edge cases"]
-            - recommendations: ["добавить тесты на edge cases", "увеличить покрытие исключений"]
+            Правила:
+            1. Все строки должны быть короткими (до 50 символов)
+            2. ЗАПРЕЩЕНО использовать многоточия
+            3. Объяснение должно быть кратким и понятным
+            4. Все массивы должны содержать минимум 2 элемента
             
             === ТРЕБОВАНИЕ ===
             ID: ${requirement.id}
             Название: ${requirement.title}
-            Описание: ${requirement.description}
+            Описание: ${requirement.description.take(500)}
+            
             $criteriaText
             $tagsText
             
             === ТЕСТЫ ===
             $topTests
+            
+            Проанализируй и верни ответ в указанном JSON формате.
         """.trimIndent()
 
         // Получаем ответ от AI
@@ -473,80 +473,116 @@ class CoverageAiAnalyzer(
         return try {
             println("   🛠️  Начинаем парсинг AI ответа...")
 
-            // 1. Пытаемся найти JSON (более гибкий поиск)
-            val jsonMatch = findJsonInResponse(response)
+            // 1. Очищаем ответ от некорректных символов
+            val cleanedResponse = cleanAIResponse(response)
+
+            // 2. Пытаемся найти JSON
+            val jsonMatch = findJsonInResponse(cleanedResponse)
 
             if (jsonMatch != null) {
                 println("   ✅ Найден структурированный JSON ответ")
                 return parseStructuredAIResponse(jsonMatch)
             }
 
-            // 2. Пытаемся найти Markdown с JSON
-            val markdownJson = extractJsonFromMarkdown(response)
+            // 3. Пытаемся найти Markdown с JSON
+            val markdownJson = extractJsonFromMarkdown(cleanedResponse)
             if (markdownJson != null) {
                 println("   ✅ Найден JSON в Markdown ответе")
                 return parseStructuredAIResponse(markdownJson)
             }
 
-            // 3. Парсим текстовый ответ с улучшенной логикой
+            // 4. Парсим текстовый ответ
             println("   ⚠️  JSON не найден, парсим текстовый ответ")
-            parseEnhancedTextAIResponse(response)
+            parseEnhancedTextAIResponse(cleanedResponse)
 
         } catch (e: Exception) {
             println("   ❌ Ошибка парсинга AI ответа: ${e.message}")
-            // Возвращаем анализ с информацией об ошибке
-            AIAnalysis(
-                rawText = response.take(500) + (if (response.length > 500) "..." else ""),
-                confidence = ConfidenceLevel.LOW,
-                coveredAspects = listOf("Не удалось разобрать ответ AI"),
-                missingAspects = listOf("Ошибка парсинга: ${e.message}"),
-                explanation = "AI ответ не соответствует ожидаемому формату. Ответ начинается с: ${response.take(100)}...",
-                recommendations = listOf(
-                    "Проверьте формат ответа AI",
-                    "Убедитесь, что AI возвращает корректный JSON",
-                    "Попробуйте упростить промпт"
-                ),
-                coveredCriteria = emptyList(),
-                missingCriteria = emptyList()
-            )
+            createFallbackAnalysis(response)
         }
     }
 
     /**
-     * Находит JSON в ответе (более гибкий поиск)
+     * Очищает ответ AI от некорректных символов
+     */
+    private fun cleanAIResponse(response: String): String {
+        return response
+            .replace("...", ".")
+            .replace("\\.\\.\\.", ".")
+            .replace("..", ".")
+            .replace(Regex("\\s+"), " ")
+            .replace("\"\"", "\"")
+            .replace("\\\"", "\"")
+            .trim()
+    }
+
+    /**
+     * Находит JSON в ответе
      */
     private fun findJsonInResponse(response: String): String? {
-        // Вариант 1: Ищем чистый JSON
         try {
+            // Ищем начало JSON
             val jsonStart = response.indexOf('{')
-            val jsonEnd = response.lastIndexOf('}')
+            if (jsonStart == -1) return null
 
-            if (jsonStart != -1 && jsonEnd != -1 && jsonEnd > jsonStart) {
-                val possibleJson = response.substring(jsonStart, jsonEnd + 1)
+            // Находим баланс фигурных скобок
+            var braceCount = 0
+            var jsonEnd = -1
 
-                // Проверяем, что это похоже на наш JSON
-                if (possibleJson.contains("\"coverage_assessment\"") ||
-                    possibleJson.contains("\"covered_aspects\"") ||
-                    possibleJson.contains("\"recommendations\"")) {
-
-                    // Проверяем валидность JSON
-                    val mapper = com.fasterxml.jackson.databind.ObjectMapper()
-                    mapper.readTree(possibleJson) // Если не выбросит исключение, JSON валиден
-                    return possibleJson
+            for (i in jsonStart until response.length) {
+                when (response[i]) {
+                    '{' -> braceCount++
+                    '}' -> {
+                        braceCount--
+                        if (braceCount == 0) {
+                            jsonEnd = i
+                            break
+                        }
+                    }
                 }
             }
-        } catch (e: Exception) {
-            // Невалидный JSON, продолжаем поиск
-        }
 
-        // Вариант 2: Ищем JSON с кодом языка
-        val codeBlockPattern = "```(?:json)?\\s*(\\{.*?\\})\\s*```".toRegex(RegexOption.DOT_MATCHES_ALL)
-        val codeMatch = codeBlockPattern.find(response)
-        if (codeMatch != null) {
-            return codeMatch.groupValues[1].trim()
+            if (jsonEnd == -1) {
+                // Если не нашли баланс, ищем последнюю закрывающую скобку
+                jsonEnd = response.lastIndexOf('}')
+                if (jsonEnd <= jsonStart) return null
+            }
+
+            val json = response.substring(jsonStart, jsonEnd + 1)
+
+            // Проверяем, что это похоже на наш JSON
+            if (json.contains("\"coverage_assessment\"") ||
+                json.contains("\"covered_aspects\"") ||
+                json.contains("\"recommendations\"")) {
+
+                // Исправляем распространенные ошибки
+                return fixJsonErrors(json)
+            }
+        } catch (e: Exception) {
+            // Игнорируем ошибки
         }
 
         return null
+    }
+
+    /**
+     * Исправляет ошибки в JSON
+     */
+    private fun fixJsonErrors(json: String): String {
+        var fixed = json
+
+        // Убираем незавершенные строки
+        fixed = fixed.replace(Regex("\"([^\"]*)\\.\\.\\.\""), "\"\$1\"")
+        fixed = fixed.replace(Regex("\"([^\"]*)\\.\\.\""), "\"\$1\"")
+        fixed = fixed.replace(Regex("\"([^\"]*)\\.\""), "\"\$1\"")
+
+        // Убираем лишние запятые
+        fixed = fixed.replace(Regex(",\\s*\\}"), "}")
+        fixed = fixed.replace(Regex(",\\s*\\]"), "]")
+
+        // Заменяем одинарные кавычки
+        fixed = fixed.replace("'", "\"")
+
+        return fixed
     }
 
     /**
@@ -568,7 +604,7 @@ class CoverageAiAnalyzer(
                         inJsonBlock = false
                         val json = jsonLines.joinToString("\n")
                         if (json.contains("{") && json.contains("}")) {
-                            return json
+                            return fixJsonErrors(json)
                         }
                         jsonLines.clear()
                     }
@@ -586,203 +622,132 @@ class CoverageAiAnalyzer(
      * Улучшенный парсинг текстового ответа
      */
     private fun parseEnhancedTextAIResponse(text: String): AIAnalysis {
-        val lines = text.lines()
+        // Очищаем текст
+        val cleanedText = cleanAIResponse(text)
+        val lines = cleanedText.lines()
 
         // Ищем confidence в тексте
         val confidence = when {
-            text.contains("высок", ignoreCase = true) ||
-                    text.contains("high", ignoreCase = true) ||
-                    text.contains("полное", ignoreCase = true) ||
-                    text.contains("отличн", ignoreCase = true) -> ConfidenceLevel.HIGH
+            cleanedText.contains("высок", ignoreCase = true) ||
+                    cleanedText.contains("high", ignoreCase = true) ||
+                    cleanedText.contains("полное", ignoreCase = true) -> ConfidenceLevel.HIGH
 
-            text.contains("средн", ignoreCase = true) ||
-                    text.contains("medium", ignoreCase = true) ||
-                    text.contains("частичное", ignoreCase = true) ||
-                    text.contains("умерен", ignoreCase = true) -> ConfidenceLevel.MEDIUM
+            cleanedText.contains("средн", ignoreCase = true) ||
+                    cleanedText.contains("medium", ignoreCase = true) ||
+                    cleanedText.contains("частичное", ignoreCase = true) -> ConfidenceLevel.MEDIUM
 
             else -> ConfidenceLevel.LOW
         }
 
         // Извлекаем покрытые аспекты
-        val coveredAspects: MutableList<String> = extractSectionsFromText(lines, listOf(
-            "✅ покрытые аспекты",
-            "покрытые аспекты:",
-            "covered aspects:",
-            "что покрыто:",
-            "тесты проверяют:",
-            "охвачены:"
+        val coveredAspects = extractItemsFromText(cleanedText, listOf(
+            "покрытые аспекты",
+            "covered aspects",
+            "что покрыто",
+            "тесты проверяют"
         ))
-
-        // Если не нашли, пробуем извлечь из общего текста
-        if (coveredAspects.isEmpty()) {
-            coveredAspects.addAll(extractBulletPoints(text, listOf("проверяет", "охватывает", "тестирует")))
-        }
 
         // Извлекаем непокрытые аспекты
-        val missingAspects = extractSectionsFromText(lines, listOf(
-            "⚠️ непокрытые аспекты",
-            "непокрытые аспекты:",
-            "missing aspects:",
-            "что не покрыто:",
-            "нужно добавить:",
-            "отсутствует:"
+        val missingAspects = extractItemsFromText(cleanedText, listOf(
+            "непокрытые аспекты",
+            "missing aspects",
+            "что не покрыто",
+            "нужно добавить"
         ))
-
-        // Если не нашли, используем дефолтные
-        if (missingAspects.isEmpty()) {
-            missingAspects.add("обработка ошибок и исключительных ситуаций")
-            missingAspects.add("пограничные случаи (edge cases)")
-        }
 
         // Извлекаем рекомендации
-        val recommendations = extractSectionsFromText(lines, listOf(
-            "💡 рекомендации",
-            "рекомендации:",
-            "recommendations:",
-            "советы:",
-            "что улучшить:",
-            "предложения:"
+        val recommendations = extractItemsFromText(cleanedText, listOf(
+            "рекомендации",
+            "recommendations",
+            "советы",
+            "что улучшить"
         ))
 
-        // Если не нашли, используем дефолтные
-        if (recommendations.isEmpty()) {
-            recommendations.addAll(extractBulletPoints(text, listOf("рекомендуется", "следует", "нужно", "стоит")))
-            if (recommendations.isEmpty()) {
-                recommendations.add("добавить тесты на обработку ошибок")
-                recommendations.add("проверить покрытие edge cases")
-                recommendations.add("увеличить разнообразие тестовых данных")
-            }
-        }
-
         // Формируем объяснение
-        val explanation = if (text.length > 300) {
-            val firstParagraph = text.split("\n\n").firstOrNull() ?: text.take(300)
-            firstParagraph.take(250) + "..."
-        } else {
-            text
-        }
+        val explanation = buildExplanation(cleanedText)
 
         return AIAnalysis(
-            rawText = text,
+            rawText = cleanedText.take(500),
             confidence = confidence,
-            coveredAspects = coveredAspects.take(5), // Ограничиваем количество
-            missingAspects = missingAspects.take(3),
+            coveredAspects = coveredAspects.ifEmpty {
+                listOf("основная функциональность", "положительные сценарии")
+            },
+            missingAspects = missingAspects.ifEmpty {
+                listOf("обработка ошибок", "пограничные случаи")
+            },
             explanation = explanation,
-            recommendations = recommendations.take(3),
+            recommendations = recommendations.ifEmpty {
+                listOf("добавить тесты на edge cases", "увеличить покрытие исключений")
+            },
             coveredCriteria = emptyList(),
             missingCriteria = emptyList()
         )
     }
 
     /**
-     * Извлекает секции из текста
+     * Извлекает элементы из текста
      */
-    private fun extractSectionsFromText(lines: List<String>, triggers: List<String>): MutableList<String> {
-        val sections = mutableListOf<String>()
-        var inSection = false
-        var sectionStart = -1
-
-        for ((index, line) in lines.withIndex()) {
-            val trimmedLine = line.trim()
-
-            // Проверяем, начинается ли новая секция
-            if (triggers.any { trigger ->
-                    trimmedLine.lowercase().contains(trigger.lowercase())
-                }) {
-                inSection = true
-                sectionStart = index
-                continue
-            }
-
-            // Если мы в секции и строка содержит пункты
-            if (inSection && sectionStart != -1 && index > sectionStart) {
-                // Проверяем, не началась ли следующая секция
-                if (trimmedLine.contains(":") && trimmedLine.length < 50) {
-                    // Возможно, это начало новой секции
-                    val newSectionTriggers = listOf("рекомендации", "recommendations", "советы",
-                        "непокрытые", "missing", "покрытые", "covered")
-                    if (newSectionTriggers.any { trimmedLine.lowercase().contains(it) }) {
-                        inSection = false
-                        continue
-                    }
-                }
-
-                // Извлекаем пункты
-                extractBulletItems(trimmedLine).forEach { item ->
-                    if (item.isNotBlank() && item.length > 3) {
-                        sections.add(item)
-                    }
-                }
-            }
-
-            // Если нашли пустую строку после нескольких пунктов, возможно, секция закончилась
-            if (inSection && trimmedLine.isBlank() && sections.isNotEmpty() &&
-                index > sectionStart + 3) {
-                inSection = false
-            }
-        }
-
-        return sections.distinct().toMutableList()
-    }
-
-    /**
-     * Извлекает пункты из строки
-     */
-    private fun extractBulletItems(line: String): List<String> {
+    private fun extractItemsFromText(text: String, triggers: List<String>): List<String> {
         val items = mutableListOf<String>()
 
-        // Разные форматы пунктов
-        val bulletPatterns = listOf(
-            Regex("^[\\-•*]\\s+(.+)"),
-            Regex("^\\d+\\.\\s+(.+)"),
-            Regex("^\\[\\d+\\]\\s+(.+)")
-        )
+        for (trigger in triggers) {
+            val index = text.lowercase().indexOf(trigger.lowercase())
+            if (index != -1) {
+                // Ищем после триггера
+                var startPos = index + trigger.length
+                var endPos = text.length
 
-        for (pattern in bulletPatterns) {
-            val match = pattern.find(line)
-            if (match != null) {
-                items.add(match.groupValues[1].trim())
-                return items
-            }
-        }
-
-        // Если не нашли форматированные пункты, но строка короткая и значимая
-        if (line.isNotBlank() && line.length in 5..100 &&
-            !line.contains(":") && !line.endsWith(".")) {
-            items.add(line)
-        }
-
-        return items
-    }
-
-    /**
-     * Извлекает bullet points из текста по ключевым словам
-     */
-    private fun extractBulletPoints(text: String, keywords: List<String>): MutableList<String> {
-        val points = mutableListOf<String>()
-        val lines = text.lines()
-
-        for ((index, line) in lines.withIndex()) {
-            val trimmedLine = line.trim()
-
-            // Ищем строки с ключевыми словами
-            if (keywords.any { trimmedLine.lowercase().contains(it) }) {
-                // Смотрим следующие строки на предмет пунктов
-                for (nextLineIndex in index + 1 until minOf(index + 5, lines.size)) {
-                    val nextLine = lines[nextLineIndex].trim()
-                    val bulletItems = extractBulletItems(nextLine)
-                    points.addAll(bulletItems)
-
-                    if (bulletItems.isEmpty() && nextLine.isNotBlank()) {
-                        // Возможно, это продолжение текста
-                        points.add(nextLine.take(100))
+                // Ищем конец секции (по следующему триггеру или концу)
+                for (otherTrigger in listOf("рекомендации", "recommendations", "непокрытые", "missing", "объяснение", "explanation")) {
+                    if (otherTrigger != trigger) {
+                        val otherIndex = text.lowercase().indexOf(otherTrigger.lowercase(), startPos)
+                        if (otherIndex != -1 && otherIndex < endPos) {
+                            endPos = otherIndex
+                        }
                     }
                 }
+
+                val section = text.substring(startPos, endPos)
+
+                // Ищем пункты в секции
+                val lines = section.lines()
+                for (line in lines) {
+                    val trimmed = line.trim()
+                    if (trimmed.startsWith("-") || trimmed.startsWith("•") || trimmed.startsWith("*")) {
+                        val item = trimmed.substring(1).trim()
+                        if (item.isNotBlank() && item.length < 100) {
+                            items.add(item)
+                        }
+                    } else if (trimmed.matches("\\d+\\.\\s+.*".toRegex())) {
+                        val item = trimmed.substring(trimmed.indexOf('.') + 1).trim()
+                        if (item.isNotBlank() && item.length < 100) {
+                            items.add(item)
+                        }
+                    }
+                }
+
                 break
             }
         }
 
-        return points.distinct().take(5).toMutableList()
+        return items.take(5)
+    }
+
+    /**
+     * Формирует объяснение из текста
+     */
+    private fun buildExplanation(text: String): String {
+        // Ищем первое предложение или абзац
+        val sentences = text.split(Regex("[.!?]"))
+        if (sentences.isNotEmpty()) {
+            val firstSentence = sentences[0].trim()
+            if (firstSentence.isNotBlank() && firstSentence.length > 10) {
+                return firstSentence.take(200)
+            }
+        }
+
+        // Если не нашли предложение, берем первые 200 символов
+        return text.take(200).trim()
     }
 
     private fun parseStructuredAIResponse(jsonText: String): AIAnalysis {
@@ -792,7 +757,10 @@ class CoverageAiAnalyzer(
 
             val coverageAssessment = jsonNode.get("coverage_assessment")?.asText() ?: "partial"
             val confidenceText = jsonNode.get("confidence")?.asText() ?: "medium"
-            val explanation = jsonNode.get("explanation")?.asText() ?: "Нет объяснения"
+
+            // Получаем и очищаем объяснение
+            val rawExplanation = jsonNode.get("explanation")?.asText() ?: "Анализ покрытия тестами"
+            val explanation = cleanExplanation(rawExplanation)
 
             val confidence = when (confidenceText.lowercase()) {
                 "high" -> ConfidenceLevel.HIGH
@@ -801,21 +769,21 @@ class CoverageAiAnalyzer(
                 else -> ConfidenceLevel.MEDIUM
             }
 
-            // Извлекаем массивы с обработкой ошибок
-            val coveredAspects = extractJsonArraySafe(jsonNode, "covered_aspects")
+            // Извлекаем и очищаем массивы
+            val coveredAspects = extractAndCleanJsonArray(jsonNode, "covered_aspects")
                 .ifEmpty { listOf("основная функциональность", "положительные сценарии") }
 
-            val missingAspects = extractJsonArraySafe(jsonNode, "missing_aspects")
-                .ifEmpty { listOf("обработка ошибок", "edge cases") }
+            val missingAspects = extractAndCleanJsonArray(jsonNode, "missing_aspects")
+                .ifEmpty { listOf("обработка ошибок", "пограничные случаи") }
 
-            val recommendations = extractJsonArraySafe(jsonNode, "recommendations")
+            val recommendations = extractAndCleanJsonArray(jsonNode, "recommendations")
                 .ifEmpty { listOf("добавить тесты на edge cases", "увеличить покрытие исключений") }
 
-            val coveredCriteria = extractJsonArraySafe(jsonNode, "covered_criteria")
-            val missingCriteria = extractJsonArraySafe(jsonNode, "missing_criteria")
+            val coveredCriteria = extractAndCleanJsonArray(jsonNode, "covered_criteria")
+            val missingCriteria = extractAndCleanJsonArray(jsonNode, "missing_criteria")
 
             AIAnalysis(
-                rawText = jsonText,
+                rawText = jsonText.take(500),
                 confidence = confidence,
                 coveredAspects = coveredAspects,
                 missingAspects = missingAspects,
@@ -826,25 +794,71 @@ class CoverageAiAnalyzer(
             )
         } catch (e: Exception) {
             println("   ⚠️  Ошибка парсинга JSON: ${e.message}")
-            // Fallback на текстовый парсинг при ошибке
+            // Fallback на текстовый парсинг
             parseEnhancedTextAIResponse(jsonText)
         }
     }
 
-    private fun extractJsonArraySafe(jsonNode: com.fasterxml.jackson.databind.JsonNode, fieldName: String): List<String> {
+    /**
+     * Очищает объяснение от некорректных символов
+     */
+    private fun cleanExplanation(explanation: String): String {
+        return explanation
+            .replace("...", ".")
+            .replace("\\.\\.\\.", ".")
+            .replace("..", ".")
+            .replace(Regex("\\s+"), " ")
+            .take(200)
+            .trim()
+    }
+
+    /**
+     * Извлекает и очищает массив из JsonNode
+     */
+    private fun extractAndCleanJsonArray(jsonNode: com.fasterxml.jackson.databind.JsonNode, fieldName: String): List<String> {
         return try {
             val arrayNode = jsonNode.get(fieldName)
             if (arrayNode != null && arrayNode.isArray) {
-                arrayNode.map {
+                arrayNode.mapNotNull {
                     val text = it.asText()
-                    if (text.isNotBlank()) text.trim() else null
-                }.filterNotNull()
+                    if (text.isNotBlank()) {
+                        text.trim()
+                            .replace("...", "")
+                            .replace("\\.\\.\\.", "")
+                            .replace("..", "")
+                            .replace(Regex("\\s+"), " ")
+                            .take(100)
+                    } else {
+                        null
+                    }
+                }
             } else {
                 emptyList()
             }
         } catch (e: Exception) {
             emptyList()
         }
+    }
+
+    /**
+     * Создает fallback анализ
+     */
+    private fun createFallbackAnalysis(response: String): AIAnalysis {
+        val cleanedResponse = cleanAIResponse(response)
+
+        return AIAnalysis(
+            rawText = cleanedResponse.take(500),
+            confidence = ConfidenceLevel.LOW,
+            coveredAspects = listOf("основная функциональность"),
+            missingAspects = listOf("обработка ошибок", "edge cases"),
+            explanation = "Не удалось получить структурированный анализ. Ответ AI не соответствует ожидаемому формату.",
+            recommendations = listOf(
+                "Проверьте настройки AI сервиса",
+                "Упростите промпт для получения структурированного ответа"
+            ),
+            coveredCriteria = emptyList(),
+            missingCriteria = emptyList()
+        )
     }
 
     private fun getFileExtension(filePath: String): String {
@@ -882,22 +896,6 @@ class CoverageAiAnalyzer(
             val aiWithRecommendations = aiAnalyses.count { it.recommendations.isNotEmpty() }
             println("  С покрытыми аспектами: $aiWithCoveredAspects")
             println("  С рекомендациями: $aiWithRecommendations")
-
-            // Собираем все рекомендации для анализа
-            val allRecommendations = aiAnalyses.flatMap { it.recommendations }
-            if (allRecommendations.isNotEmpty()) {
-                val topRecommendations = allRecommendations
-                    .groupingBy { it }
-                    .eachCount()
-                    .entries
-                    .sortedByDescending { it.value }
-                    .take(5)
-
-                println("\n  🏆 Топ-5 рекомендаций:")
-                topRecommendations.forEach { (rec, count) ->
-                    println("    • $rec ($count требований)")
-                }
-            }
         }
 
         // Топ требований по покрытию
@@ -906,20 +904,6 @@ class CoverageAiAnalyzer(
         top5.forEachIndexed { index, report ->
             println("  ${index + 1}. ${report.requirement.title} - ${"%.1f".format(report.coverageScore)}% (${report.matches.size} тестов)")
         }
-
-        // Требования с низким покрытием
-        val lowCoverage = reports.filter { it.coverageScore < 15 }
-        if (lowCoverage.isNotEmpty()) {
-            println("\n⚠️  Требования с низким покрытием (<15%):")
-            lowCoverage.forEach { report ->
-                println("  • ${report.requirement.title} - ${"%.1f".format(report.coverageScore)}%")
-            }
-        }
-
-        // Статистика по соответствиям
-        val totalMatches = reports.sumOf { it.matches.size }
-        val avgMatches = if (totalRequirements > 0) totalMatches.toDouble() / totalRequirements else 0.0
-        println("\n🔗 Среднее соответствий на требование: ${"%.1f".format(avgMatches)}")
 
         println("=".repeat(50))
     }

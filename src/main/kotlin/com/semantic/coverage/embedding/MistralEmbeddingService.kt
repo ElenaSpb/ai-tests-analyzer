@@ -18,7 +18,7 @@ import kotlin.math.sqrt
  */
 class MistralEmbeddingService(
     private val apiKey: String,
-    private val textModel: String = "codestral-embed",
+    private val textModel: String = "mistral-embed",
     private val codeModel: String = "codestral-embed", //"codestral-2501",
     private val baseUrl: String = "https://api.mistral.ai/v1",
     private val unsafeSSL: Boolean = false
