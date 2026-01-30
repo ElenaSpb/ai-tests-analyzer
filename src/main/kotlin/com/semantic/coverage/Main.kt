@@ -2,6 +2,7 @@ package com.semantic.coverage
 
 import com.semantic.coverage.analyze.CoverageOpenAiAnalyzer
 import com.semantic.coverage.aiServices.AiService
+import com.semantic.coverage.aiServices.MistralService
 import com.semantic.coverage.aiServices.OllamaService
 import com.semantic.coverage.aiServices.OpenAiV2Service
 import com.semantic.coverage.embedding.LocalEmbeddingService
@@ -50,13 +51,20 @@ fun main(args: Array<String>) {
         ArgType.String,
         shortName = "openai-key",
         description = "OpenAI API key"
-    ).default("real-key")
+    ).default("")
 
     val ollamaUrl by parser.option(
         ArgType.String,
         shortName = "ollama",
         description = "Ollama URL (e.g., http://localhost:11434)"
     ).default("")
+
+
+    val mistralKey by parser.option(
+        ArgType.String,
+        shortName = "mistral-key",
+        description = "Mistral api-key"
+    ).default("dPw0OW84uif7ozCOi6CDIojujopazKva")
 
     parser.parse(args)
 
@@ -66,7 +74,7 @@ fun main(args: Array<String>) {
     println("🤖 AI enabled: $useAI")
 
     // Инициализация AI сервиса
-    val aiService: AiService? = initializeAiService(useAI, openaiKey, ollamaUrl)
+    val aiService: AiService? = initializeAiService(useAI, openaiKey, ollamaUrl, mistralKey)
 
     try {
         // 1. Инициализация компонентов
@@ -85,7 +93,7 @@ fun main(args: Array<String>) {
         val localEmbeddingService = LocalEmbeddingService()
         val openAiEmbeddingService = OpenAIEmbeddingService(openaiKey)
         val analyzer = CoverageOpenAiAnalyzer(
-            embeddingService = openAiEmbeddingService,
+            embeddingService = localEmbeddingService,
             aiService = aiService,
             useAI = useAI && aiService != null
         )
@@ -119,7 +127,8 @@ fun main(args: Array<String>) {
 private fun initializeAiService(
     useAI: Boolean,
     openaiKey: String,
-    ollamaUrl: String
+    ollamaUrl: String,
+    mistralKey: String,
 ): AiService? {
     return when {
         useAI && openaiKey.isNotBlank() -> {
@@ -134,6 +143,21 @@ private fun initializeAiService(
                 service
             } catch (e: Exception) {
                 println("   ❌ Failed to initialize OpenAI: ${e.message}")
+                null
+            }
+        }
+        useAI && mistralKey.isNotBlank() -> {
+            println("🤖 Using Mistral AI for analysis")
+            try {
+                val service = MistralService(mistralKey)
+                if (service.testApiKey()) {
+                    println("   ✅ Mistral API key is valid")
+                } else {
+                    println("   ⚠️  Mistral API key may be invalid")
+                }
+                service
+            } catch (e: Exception) {
+                println("   ❌ Failed to initialize Mistral: ${e.message}")
                 null
             }
         }

@@ -1,4 +1,3 @@
-// GeminiService.kt
 package com.semantic.coverage.aiServices
 
 import okhttp3.*
