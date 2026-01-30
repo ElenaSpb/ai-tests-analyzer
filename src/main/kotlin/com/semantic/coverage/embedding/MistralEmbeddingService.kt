@@ -14,12 +14,12 @@ import kotlin.math.sqrt
  * Сервис эмбеддингов для Mistral AI
  * Поддерживает модели:
  * - mistral-embed (1024 измерения)
- * - codestral-2501 (для кода, 1024 измерения)
+ * - codestral-embed (для кода, 1024 измерения)
  */
 class MistralEmbeddingService(
     private val apiKey: String,
     private val textModel: String = "mistral-embed",
-    private val codeModel: String = "codestral-2501",
+    private val codeModel: String = "codestral-embed", //"codestral-2501",
     private val baseUrl: String = "https://api.mistral.ai/v1",
     private val unsafeSSL: Boolean = false
 ) : EmbeddingService {
