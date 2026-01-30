@@ -18,7 +18,7 @@ import kotlin.math.sqrt
  */
 class MistralEmbeddingService(
     private val apiKey: String,
-    private val textModel: String = "mistral-embed",
+    private val textModel: String = "codestral-embed",
     private val codeModel: String = "codestral-embed", //"codestral-2501",
     private val baseUrl: String = "https://api.mistral.ai/v1",
     private val unsafeSSL: Boolean = false
@@ -95,7 +95,6 @@ class MistralEmbeddingService(
 
     /**
      * Специальный метод для получения эмбеддингов кода
-     * Использует модель codestral-2501 для лучшего представления кода
      */
     override fun getCodeEmbedding(code: String): FloatArray {
         println("Внимание: для лучшего представления кода используется модель $codeModel")
